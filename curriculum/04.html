@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>代表値の使い分け | Otona Statistics</title><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>@keyframes float3d{0%,100%{transform:translateY(0)rotateX(0deg)}25%{transform:translateY(-6px)rotateX(2deg)}75%{transform:translateY(3px)rotateX(-1deg)}}@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(26,95,122,0.2))}50%{filter:drop-shadow(0 0 20px rgba(26,95,122,0.4))}}@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}@keyframes cardEntrance{from{opacity:0;transform:perspective(800px)rotateY(-10deg)translateX(-30px)}to{opacity:1;transform:perspective(800px)rotateY(0deg)translateX(0)}}@keyframes pulseGlow{0%,100%{box-shadow:0 0 10px rgba(26,95,122,0.15)}50%{box-shadow:0 0 25px rgba(26,95,122,0.3)}}.figure-container{perspective:1200px;transition:all .5s cubic-bezier(.23,1,.32,1)}.figure-container svg{filter:drop-shadow(0 6px 12px rgba(0,0,0,.08));transform:perspective(800px)rotateX(1deg);transition:transform .6s ease,filter .6s ease;animation:float3d 6s ease-in-out infinite}.figure-container:hover svg{transform:perspective(800px)rotateX(0deg)scale(1.02);filter:drop-shadow(0 12px 30px rgba(26,95,122,.2));animation:glowPulse 2s ease-in-out infinite}.figure-container:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(26,95,122,.12)}.lesson-callout{animation:cardEntrance .6s ease-out;position:relative;overflow:hidden}.lesson-callout::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--color-teal),#4A8BA8,var(--color-teal));background-size:200% 100%;animation:shimmer 3s linear infinite}.lesson-step::before{transition:all .3s ease;box-shadow:0 0 0 3px rgba(26,95,122,.1)}.lesson-step:hover::before{transform:scale(1.3);box-shadow:0 0 0 6px rgba(26,95,122,.2),0 0 20px rgba(26,95,122,.2)}.rich-card{background:linear-gradient(135deg,var(--color-teal-light)0%,#FFF 60%,var(--color-teal-light)100%);background-size:200% 200%;border:1px solid var(--color-teal);border-radius:16px;padding:28px;margin:20px 0;position:relative;overflow:hidden;animation:pulseGlow 3s ease-in-out infinite;transform:perspective(800px)rotateX(1deg);transition:all .5s ease}.rich-card:hover{transform:perspective(800px)rotateX(0deg)scale(1.01)}.rich-card::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;background:linear-gradient(180deg,var(--color-teal),#4A8BA8,#7AB5CC,var(--color-teal));background-size:100% 300%;animation:shimmer 3s linear infinite}.rich-card h5{font-family:var(--font-serif);color:var(--color-teal);font-size:17px;margin-bottom:10px}.rich-card p{font-size:14px;color:var(--color-ink-soft);line-height:1.8}.summary-box{animation:pulseGlow 4s ease-in-out infinite;transition:all .5s ease}.summary-box:hover{transform:scale(1.01)}.column-box::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(26,95,122,.06),transparent);animation:float3d 5s ease-in-out infinite}</style></head>
+<body><header class="header"><div class="header-inner container"><h1 class="logo"><a href="../index.html" style="color:inherit">Otona Statistics</a></h1><nav class="nav"><ul><li><a href="index.html">カリキュラム</a></li><li><a href="../index.html#about">統計学とは</a></li><li><a href="../index.html#sample">学習サンプル</a></li></ul></nav></div></header>
+<main class="container"><div class="lesson-breadcrumbs"><a href="../index.html">ホーム</a> > <a href="index.html">カリキュラム</a> > 第1章 データの基礎 > 単元04</div>
+<article class="lesson-container"><header class="lesson-header"><span class="lesson-chapter-label">Chapter 01 / Unit 04</span><h2 class="lesson-title">代表値の使い分けと解釈の落とし穴</h2></header>
+<div class="lesson-flow">
+<div class="lesson-step"><span class="lesson-step-meta">Step 01</span><h4>代表値を「選ぶ」ことはデータを「解釈する」こと</h4><p>平均値・中央値・最頻値の3つを学びましたが、重要なのは <span class="text-highlight">「どの代表値を選ぶか」が「データの見え方」を変える</span> という事実です。同じデータでも、示す代表値によってまったく異なる印象を与えることがあります。</p>
+<div class="figure-container"><svg width="520" height="200" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<rect width="520" height="200" fill="#F8F9FA" rx="12"/>
+<text x="260" y="25" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">同じデータでも代表値で見え方が変わる</text>
+<!-- 3つのカード -->
+<rect x="20" y="45" width="150" height="60" rx="8" fill="#1A5F7A" opacity="0.9"/><text x="95" y="72" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">平均値</text><text x="95" y="92" text-anchor="middle" fill="#FFF" opacity="0.9" font-size="11">483万円</text>
+<rect x="185" y="45" width="150" height="60" rx="8" fill="#4A8BA8" opacity="0.9"/><text x="260" y="72" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">中央値</text><text x="260" y="92" text-anchor="middle" fill="#FFF" opacity="0.9" font-size="11">420万円</text>
+<rect x="350" y="45" width="150" height="60" rx="8" fill="#E05D5D" opacity="0.9"/><text x="425" y="72" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">最頻値</text><text x="425" y="92" text-anchor="middle" fill="#FFF" opacity="0.9" font-size="11">380万円</text>
+<text x="260" y="135" text-anchor="middle" fill="#495057" font-size="12">「社員の年収は平均483万円」 vs 「中央値420万円」</text>
+<text x="260" y="158" text-anchor="middle" fill="#E05D5D" font-size="12">→ 同じデータでも、示す数字で印象が変わる</text>
+<text x="260" y="185" text-anchor="middle" fill="#495057" font-size="11">データ：[300,350,380,380,420,450,500,550,2000] 外れ値（経営者）あり</text>
+</svg><p class="figure-caption">同じ年収データでも、平均・中央値・最頻値で数値が異なる。どの数字を「代表値」として示すかで、データの印象は大きく変わる。</p></div></div>
+<div class="lesson-step"><span class="lesson-step-meta">Step 02</span><h4>分布の形で「適切な代表値」が変わる</h4><p>データの分布の形状によって、適切な代表値は異なります。3つの典型的なパターンを覚えておきましょう。</p>
+<div class="figure-container"><svg width="520" height="200" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<rect width="520" height="200" fill="#F8F9FA" rx="12"/>
+<!-- 左：左右対称 -->
+<rect x="15" y="80" width="15" height="40" rx="2" fill="#1A5F7A" opacity="0.4"/><rect x="35" y="65" width="15" height="55" rx="2" fill="#1A5F7A" opacity="0.6"/>
+<rect x="55" y="45" width="15" height="75" rx="2" fill="#1A5F7A" opacity="0.8"/><rect x="75" y="35" width="15" height="85" rx="2" fill="#1A5F7A"/>
+<rect x="95" y="45" width="15" height="75" rx="2" fill="#1A5F7A" opacity="0.8"/><rect x="115" y="65" width="15" height="55" rx="2" fill="#1A5F7A" opacity="0.6"/>
+<rect x="135" y="80" width="15" height="40" rx="2" fill="#1A5F7A" opacity="0.4"/>
+<text x="75" y="140" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">左右対称</text><text x="75" y="158" text-anchor="middle" fill="#495057" font-size="10">平均=中央値</text>
+<!-- 中央：右に偏り -->
+<rect x="165" y="95" width="15" height="25" rx="2" fill="#E05D5D" opacity="0.3"/><rect x="185" y="80" width="15" height="40" rx="2" fill="#E05D5D" opacity="0.5"/>
+<rect x="205" y="60" width="15" height="60" rx="2" fill="#E05D5D" opacity="0.7"/><rect x="225" y="45" width="15" height="75" rx="2" fill="#E05D5D"/>
+<rect x="245" y="55" width="15" height="65" rx="2" fill="#E05D5D" opacity="0.8"/><rect x="265" y="70" width="15" height="50" rx="2" fill="#E05D5D" opacity="0.6"/>
+<rect x="285" y="85" width="15" height="35" rx="2" fill="#E05D5D" opacity="0.4"/><rect x="305" y="100" width="15" height="20" rx="2" fill="#E05D5D" opacity="0.2"/>
+<text x="235" y="140" text-anchor="middle" fill="#E05D5D" font-size="11" font-weight="bold">右に偏り</text><text x="235" y="158" text-anchor="middle" fill="#495057" font-size="10">平均 > 中央値</text>
+<!-- 右：左に偏り -->
+<rect x="335" y="100" width="15" height="20" rx="2" fill="#1A5F7A" opacity="0.2"/><rect x="355" y="85" width="15" height="35" rx="2" fill="#1A5F7A" opacity="0.4"/>
+<rect x="375" y="70" width="15" height="50" rx="2" fill="#1A5F7A" opacity="0.6"/><rect x="395" y="55" width="15" height="65" rx="2" fill="#1A5F7A" opacity="0.8"/>
+<rect x="415" y="45" width="15" height="75" rx="2" fill="#1A5F7A"/><rect x="435" y="60" width="15" height="60" rx="2" fill="#1A5F7A" opacity="0.7"/>
+<rect x="455" y="80" width="15" height="40" rx="2" fill="#1A5F7A" opacity="0.5"/><rect x="475" y="95" width="15" height="25" rx="2" fill="#1A5F7A" opacity="0.3"/>
+<text x="405" y="140" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">左に偏り</text><text x="405" y="158" text-anchor="middle" fill="#495057" font-size="10">平均 < 中央値</text>
+</svg><p class="figure-caption">左：左右対称なら平均=中央値。中央：右に偏り（外れ値が右）なら平均＞中央値。右：左に偏りなら平均＜中央値。</p></div>
+<div class="rich-card"><h5>📌 ビジネスでの実践ルール</h5><p>経営層に報告する数字は「目的に合った代表値」を選びましょう。給与水準の実態を伝えたいなら中央値。全体の予算規模を伝えたいなら平均値。最も一般的な意見を知りたいなら最頻値。「どの代表値を選んだか」を明示することがフェアなデータコミュニケーションの第一歩です。</p></div></div>
+<div class="lesson-step alert"><span class="lesson-step-meta">Step 03</span><h4>代表値の「落とし穴」——平均値のトリック</h4><p>代表値を悪用すると、データを意図的に「印象操作」することができます。最も典型的なのが <span class="text-highlight-red">「平均値のトリック」</span> です。</p>
+<div class="lesson-callout"><span class="lesson-callout-title">🎭 平均値のトリックの実例</span><p>「当社の社員の平均年収は800万円です」という求人広告。実は社長1人の年収が1億円で、社員9人の年収は300万円だった場合、平均は (1億 + 300万×9) ÷ 10 = 1,270万円。つまり「平均800万円」という数字は、社長と一部の社員だけで達成されています。<span class="text-highlight">平均値だけを見せられると、全体の実態を見誤る危険性がある</span>——これが「平均値のトリック」です。</p></div>
+<div class="figure-container"><svg width="520" height="180" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<rect width="520" height="180" fill="#F8F9FA" rx="12"/>
+<text x="260" y="22" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">平均値のトリック：視覚的なインパクト</text>
+<!-- 小さな9人の棒 -->
+<rect x="50" y="155" width="40" height="15" rx="3" fill="#1A5F7A"/><text x="70" y="173" text-anchor="middle" fill="#495057" font-size="9">A</text>
+<rect x="100" y="150" width="40" height="20" rx="3" fill="#1A5F7A"/><text x="120" y="173" text-anchor="middle" fill="#495057" font-size="9">B</text>
+<rect x="150" y="145" width="40" height="25" rx="3" fill="#1A5F7A"/><text x="170" y="173" text-anchor="middle" fill="#495057" font-size="9">C</text>
+<rect x="200" y="155" width="40" height="15" rx="3" fill="#1A5F7A"/><text x="220" y="173" text-anchor="middle" fill="#495057" font-size="9">D</text>
+<rect x="250" y="150" width="40" height="20" rx="3" fill="#1A5F7A"/><text x="270" y="173" text-anchor="middle" fill="#495057" font-size="9">E</text>
+<rect x="300" y="145" width="40" height="25" rx="3" fill="#1A5F7A"/><text x="320" y="173" text-anchor="middle" fill="#495057" font-size="9">F</text>
+<rect x="350" y="155" width="40" height="15" rx="3" fill="#1A5F7A"/><text x="370" y="173" text-anchor="middle" fill="#495057" font-size="9">G</text>
+<rect x="400" y="150" width="40" height="20" rx="3" fill="#1A5F7A"/><text x="420" y="173" text-anchor="middle" fill="#495057" font-size="9">H</text>
+<rect x="450" y="145" width="40" height="25" rx="3" fill="#1A5F7A"/><text x="470" y="173" text-anchor="middle" fill="#495057" font-size="9">I</text>
+<!-- 社長の巨大な棒 -->
+<rect x="50" y="40" width="440" height="30" rx="4" fill="#E05D5D"/>
+<text x="260" y="60" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">社長 1人（外れ値）</text>
+<text x="260" y="105" text-anchor="middle" fill="#E05D5D" font-size="11">社員9人（低年収） ← この状況で「平均800万円」は本当？</text>
+</svg><p class="figure-caption">外れ値があると平均値は実態を反映しない。この場合、中央値（中央の棒の高さ）を見るべき。</p></div></div>
+<div class="lesson-step"><span class="lesson-step-meta">Step 04</span><h4>複数の代表値を組み合わせて「全体像」を掴む</h4><p>プロのデータ分析者は、1つの代表値だけで判断しません。複数の代表値を組み合わせることで、データのより深い理解が得られます。</p>
+<div class="figure-container"><svg width="520" height="160" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+<rect width="520" height="160" fill="#F8F9FA" rx="12"/>
+<text x="260" y="22" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">複数代表値の組み合わせパターン</text>
+<rect x="15" y="40" width="150" height="50" rx="8" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1"/><text x="90" y="62" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">平均 ≈ 中央値</text><text x="90" y="80" text-anchor="middle" fill="#495057" font-size="10">左右対称な分布</text>
+<rect x="185" y="40" width="150" height="50" rx="8" fill="#FDF2F2" stroke="#E05D5D" stroke-width="1"/><text x="260" y="62" text-anchor="middle" fill="#E05D5D" font-size="11" font-weight="bold">平均 > 中央値</text><text x="260" y="80" text-anchor="middle" fill="#495057" font-size="10">右に外れ値（高額者）</text>
+<rect x="355" y="40" width="150" height="50" rx="8" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1"/><text x="430" y="62" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">平均 < 中央値</text><text x="430" y="80" text-anchor="middle" fill="#495057" font-size="10">左に外れ値（補助金）</text>
+<text x="260" y="125" text-anchor="middle" fill="#1A5F7A" font-size="11">ポイント：平均と中央値の差が「分布の歪み」を示す</text>
+<text x="260" y="148" text-anchor="middle" fill="#495057" font-size="10">差が大きいほど「データのどこかに偏りがある」というシグナル</text>
+</svg><p class="figure-caption">平均と中央値を比べるだけで、データの分布の歪みがわかる。両者の差が大きいほど、外れ値や偏りの存在を示唆する。</p></div>
+<div class="rich-card"><h5>🎯 プロのチェック習慣</h5><p>データを見たら次の3つを必ず確認する習慣をつけましょう。①平均値と中央値は大きく離れていないか？②最頻値は平均や中央値とどう違うか？③外れ値は存在するか？——この3つを30秒でチェックするだけで、データの誤解釈を防げます。</p></div></div>
+<div class="lesson-step success"><span class="lesson-step-meta">Step 05</span><h4>まとめ：代表値は「使い分ける」もの</h4>
+<div class="summary-box"><h4>📌 この単元の3つの重要ポイント</h4><ul>
+<li><strong>分布の形によって適切な代表値は異なる。</strong>左右対称なら平均、外れ値ありなら中央値、質的データなら最頻値。</li>
+<li><strong>「平均値のトリック」に注意。</strong>外れ値があると平均値は実態とかけ離れる。求人広告などの数字は中央値も合わせて確認する習慣を。</li>
+<li><strong>複数の代表値を組み合わせて判断する。</strong>平均と中央値の差が「分布の歪み」のシグナル。差が大きい場合は理由を探る。</li>
+</ul></div></div>
+<div class="lesson-step alert"><span class="lesson-step-meta">番外編 (Column)</span><h4>【番外編】「平均給与」のニュース——なぜ毎回「実感と違う」と言われるのか？</h4>
+<div class="column-box"><span class="lesson-callout-title">📺 メディアが使う代表値のカラクリ</span><p>「日本の平均年収は○○万円」というニュースを見るたびに、「自分は平均以下だ…」と感じる人は少なくありません。しかし、この数字の多くは「平均値」です。所得分布は<a href="03.html">前の単元で学んだ</a>ように、外れ値（超高額所得者）が右側に存在する「右に偏った分布」になっています。つまり平均値は中央値より高く出るため、半数以上の人が「平均以下」になるという構造的な問題があるのです。</p><p>実際、国税庁のデータでは平均値と中央値の差は年間50〜80万円もあります。メディアが「平均値」を選ぶのか「中央値」を選ぶのかで、伝わる印象は大きく変わります。<span class="text-highlight">「平均」という言葉を聞いたら、まず「じゃあ中央値は？」と問う習慣</span>を持ちましょう。それだけで、あなたの統計リテラシーは一段上のレベルに達します。</p></div></div>
+<div class="quiz-box"><span class="quiz-score" data-score="0">🏆 0/4</span><p class="quiz-question">【確認問題】ある会社の年収データで「平均値＞中央値」という関係が成り立っている。このデータの分布として最も考えられるのは？</p>
+<div class="quiz-options"><div class="quiz-option" data-correct="false">A. 全員が同じ年収である</div><div class="quiz-option" data-correct="true">B. 一部の高額所得者が存在する（右に偏り）</div><div class="quiz-option" data-correct="false">C. 一部の低額所得者が存在する（左に偏り）</div><div class="quiz-option" data-correct="false">D. 年収の分布が左右対称である</div></div>
+<div class="quiz-feedback"><span class="feedback-emoji">💡</span> 正解は「B」です。平均値＞中央値という関係は、データが右側（高い側）に外れ値を持っていることを示します。超高額所得者の存在によって平均値が引き上げられている状態です。</div></div></div>
+<footer class="lesson-footer-nav"><a href="03.html" class="btn-secondary">&larr; 前の単元へ</a><a href="05.html" class="btn btn-primary">次の単元へ</a></footer></article></main>
+<footer class="footer"><div class="container footer-inner"><div class="footer-left"><div class="footer-logo">Otona Statistics</div><p>大人のための統計学学び直しプラットフォーム</p></div><div class="footer-right"><p class="copyright">&copy; 2026 Otona Statistics.</p></div></div></footer>
+<script src="../js/main.js"></script></body></html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データの代表値 | Otona Statistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        @keyframes float3d { 0%,100% { transform: translateY(0px) rotateX(0deg); } 25% { transform: translateY(-6px) rotateX(2deg); } 75% { transform: translateY(3px) rotateX(-1deg); } }
+        @keyframes glowPulse { 0%,100% { filter: drop-shadow(0 0 8px rgba(26,95,122,0.2)); } 50% { filter: drop-shadow(0 0 20px rgba(26,95,122,0.4)); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes cardEntrance { from { opacity: 0; transform: perspective(800px) rotateY(-10deg) translateX(-30px); } to { opacity: 1; transform: perspective(800px) rotateY(0deg) translateX(0); } }
+        @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 10px rgba(26,95,122,0.15); } 50% { box-shadow: 0 0 25px rgba(26,95,122,0.3); } }
+        .figure-container { perspective: 1200px; transition: all 0.5s cubic-bezier(0.23,1,0.32,1); }
+        .figure-container svg { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08)); transform: perspective(800px) rotateX(1deg); transition: transform 0.6s ease, filter 0.6s ease; animation: float3d 6s ease-in-out infinite; }
+        .figure-container:hover svg { transform: perspective(800px) rotateX(0deg) scale(1.02); filter: drop-shadow(0 12px 30px rgba(26,95,122,0.2)); animation: glowPulse 2s ease-in-out infinite; }
+        .figure-container:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(26,95,122,0.12); }
+        .lesson-callout { animation: cardEntrance 0.6s ease-out; position: relative; overflow: hidden; }
+        .lesson-callout::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--color-teal), #4A8BA8, var(--color-teal)); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+        .lesson-callout[style*="orange"]::after { background: linear-gradient(90deg, var(--color-orange), #F08A8A, var(--color-orange)); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+        .lesson-step::before { transition: all 0.3s ease; box-shadow: 0 0 0 3px rgba(26,95,122,0.1); }
+        .lesson-step:hover::before { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(26,95,122,0.2), 0 0 20px rgba(26,95,122,0.2); }
+        .rich-card { background: linear-gradient(135deg, var(--color-teal-light) 0%, #FFFFFF 60%, var(--color-teal-light) 100%); background-size: 200% 200%; border: 1px solid var(--color-teal); border-radius: 16px; padding: 28px; margin: 20px 0; position: relative; overflow: hidden; animation: pulseGlow 3s ease-in-out infinite; transform: perspective(800px) rotateX(1deg); transition: all 0.5s ease; }
+        .rich-card:hover { transform: perspective(800px) rotateX(0deg) scale(1.01); }
+        .rich-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--color-teal), #4A8BA8, #7AB5CC, var(--color-teal)); background-size: 100% 300%; animation: shimmer 3s linear infinite; }
+        .rich-card h5 { font-family: var(--font-serif); color: var(--color-teal); font-size: 17px; margin-bottom: 10px; }
+        .rich-card p { font-size: 14px; color: var(--color-ink-soft); line-height: 1.8; }
+        .summary-box { animation: pulseGlow 4s ease-in-out infinite; transition: all 0.5s ease; }
+        .summary-box:hover { transform: scale(1.01); }
+        .column-box::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(26,95,122,0.06), transparent); animation: float3d 5s ease-in-out infinite; }
+        .text-highlight:hover { color: var(--color-teal); transform: scale(1.05); display: inline-block; }
+        .text-highlight-red:hover { color: var(--color-orange); transform: scale(1.05); display: inline-block; }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-inner container">
+        <h1 class="logo"><a href="../index.html" style="color: inherit;">Otona Statistics</a></h1>
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">カリキュラム</a></li>
+                <li><a href="../index.html#about">統計学とは</a></li>
+                <li><a href="../index.html#sample">学習サンプル</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<main class="container">
+    <div class="lesson-breadcrumbs"><a href="../index.html">ホーム</a> > <a href="index.html">カリキュラム</a> > 第1章 データの基礎 > 単元03</div>
+    <article class="lesson-container">
+        <header class="lesson-header">
+            <span class="lesson-chapter-label">Chapter 01 / Unit 03</span>
+            <h2 class="lesson-title">データの代表値<br>——平均値・中央値・最頻値</h2>
+        </header>
+        <div class="lesson-flow">
+
+            <!-- Step 01 -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 01</span>
+                <h4>「代表値」とはデータを代表する1つの数値</h4>
+                <p>データの全体像を把握するとき、すべての数値を覚えておくのは不可能です。そこで統計学では、データの特徴を <span class="text-highlight">「代表値」という1つの数値で要約</span> します。代表値には主に3つ——<span class="text-highlight">平均値</span>・<span class="text-highlight">中央値</span>・<span class="text-highlight">最頻値</span>——があり、データの性質によって使い分ける必要があります。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="140" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="g01" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#1A5F7A" /><stop offset="100%" stop-color="#4A8BA8" /></linearGradient>
+                            <linearGradient id="g02" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#4A8BA8" /><stop offset="100%" stop-color="#7AB5CC" /></linearGradient>
+                            <linearGradient id="g03" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E05D5D" /><stop offset="100%" stop-color="#F08A8A" /></linearGradient>
+                            <filter id="sh01"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12" /></filter>
+                        </defs>
+                        <rect width="520" height="140" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="25" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">3つの代表値</text>
+                        <rect x="20" y="40" width="150" height="80" rx="10" fill="url(#g01)" filter="url(#sh01)" />
+                        <text x="95" y="68" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="16" font-weight="bold">平均値</text>
+                        <text x="95" y="90" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">すべての値を足して</text>
+                        <text x="95" y="108" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">個数で割った値</text>
+                        <rect x="185" y="40" width="150" height="80" rx="10" fill="url(#g02)" filter="url(#sh01)" />
+                        <text x="260" y="68" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="16" font-weight="bold">中央値</text>
+                        <text x="260" y="90" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">データを小さい順に</text>
+                        <text x="260" y="108" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">並べた真ん中の値</text>
+                        <rect x="350" y="40" width="150" height="80" rx="10" fill="url(#g03)" filter="url(#sh01)" />
+                        <text x="425" y="68" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="16" font-weight="bold">最頻値</text>
+                        <text x="425" y="90" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">データの中で最も</text>
+                        <text x="425" y="108" text-anchor="middle" fill="#FFF" opacity="0.85" font-size="12">頻繁に現れる値</text>
+                    </svg>
+                    <p class="figure-caption">3つの代表値。それぞれ定義が異なり、データの種類や分布に応じて使い分ける必要がある。</p>
+                </div>
+            </div>
+
+            <!-- Step 02 -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 02</span>
+                <h4>平均値：バランスの中心</h4>
+                <p><span class="text-highlight">平均値（算術平均）</span>は、最も広く使われる代表値です。すべてのデータの値を合計し、データの個数で割って求めます。直感的に理解しやすく、計算も簡単ですが、<span class="text-highlight-red">外れ値（極端な値）に大きく影響される</span>という弱点があります。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="160" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="520" height="160" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="22" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">平均値のイメージ：シーソーのつり合い点</text>
+                        <!-- シーソー -->
+                        <polygon points="50,130 470,130 260,100" fill="#E9ECEF" stroke="#212529" stroke-width="1.5" />
+                        <circle cx="260" cy="100" r="6" fill="#212529" />
+                        <line x1="260" y1="100" x2="260" y2="140" stroke="#212529" stroke-width="2" />
+                        <rect x="250" y="140" width="20" height="15" fill="#212529" rx="2" />
+                        <!-- データ点 -->
+                        <circle cx="100" cy="130" r="8" fill="#1A5F7A" /><text x="100" y="150" text-anchor="middle" fill="#495057" font-size="10">2</text>
+                        <circle cx="160" cy="130" r="8" fill="#1A5F7A" /><text x="160" y="150" text-anchor="middle" fill="#495057" font-size="10">3</text>
+                        <circle cx="220" cy="130" r="8" fill="#1A5F7A" /><text x="220" y="150" text-anchor="middle" fill="#495057" font-size="10">4</text>
+                        <circle cx="280" cy="130" r="8" fill="#1A5F7A" /><text x="280" y="150" text-anchor="middle" fill="#495057" font-size="10">5</text>
+                        <circle cx="340" cy="130" r="8" fill="#1A5F7A" /><text x="340" y="150" text-anchor="middle" fill="#495057" font-size="10">6</text>
+                        <circle cx="400" cy="130" r="8" fill="#1A5F7A" /><text x="400" y="150" text-anchor="middle" fill="#495057" font-size="10">7</text>
+                        <!-- 平均位置 -->
+                        <text x="260" y="85" text-anchor="middle" fill="#E05D5D" font-size="12" font-weight="bold">▼ 平均 = 4.5</text>
+                        <circle cx="260" cy="130" r="10" fill="none" stroke="#E05D5D" stroke-width="2" />
+                    </svg>
+                    <p class="figure-caption">平均値はシーソーの支点のようなもの。データの値が均等に分布している場合、平均値はデータの「重心」を示す。</p>
+                </div>
+
+                <div class="rich-card">
+                    <h5>🧮 平均値の計算</h5>
+                    <p>データが $2, 3, 4, 5, 6, 7$ の6個の場合、平均値は $\frac{2+3+4+5+6+7}{6} = \frac{27}{6} = 4.5$ です。ここに外れ値 $100$ を追加すると、平均値は一気に $\frac{127}{7} \approx 18.1$ まで跳ね上がります。たった1つの異常値で平均値が大きく変わってしまう——これが平均値の弱点です。</p>
+                </div>
+            </div>
+
+            <!-- Step 03 -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">Step 03</span>
+                <h4>中央値：順位の真ん中</h4>
+                <p><span class="text-highlight">中央値（メディアン）</span>は、データを小さい順に並べたときにちょうど真ん中にくる値です。平均値と違って、<span class="text-highlight-red">外れ値の影響をほとんど受けない</span>という大きな利点があります。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="180" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+                        <defs><filter id="sh03"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.10" /></filter></defs>
+                        <rect width="520" height="180" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="22" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">中央値のイメージ：小さい順に並べて真ん中</text>
+                        <!-- データ点（外れ値あり） -->
+                        <text x="30" y="50" fill="#495057" font-size="11">小</text>
+                        <circle cx="60" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="60" y="95" text-anchor="middle" fill="#495057" font-size="10">1</text>
+                        <circle cx="100" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="100" y="95" text-anchor="middle" fill="#495057" font-size="10">2</text>
+                        <circle cx="140" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="140" y="95" text-anchor="middle" fill="#495057" font-size="10">3</text>
+                        <circle cx="180" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="180" y="95" text-anchor="middle" fill="#495057" font-size="10">4</text>
+                        <circle cx="220" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="220" y="95" text-anchor="middle" fill="#495057" font-size="10">5</text>
+                        <circle cx="260" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="260" y="95" text-anchor="middle" fill="#495057" font-size="10">6</text>
+                        <circle cx="300" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="300" y="95" text-anchor="middle" fill="#495057" font-size="10">7</text>
+                        <circle cx="340" cy="70" r="8" fill="#1A5F7A" filter="url(#sh03)" /><text x="340" y="95" text-anchor="middle" fill="#495057" font-size="10">8</text>
+                        <!-- 中央値のハイライト -->
+                        <circle cx="260" cy="70" r="12" fill="none" stroke="#E05D5D" stroke-width="2.5" />
+                        <text x="260" y="60" text-anchor="middle" fill="#E05D5D" font-size="11" font-weight="bold">中央値</text>
+                        <!-- 外れ値 -->
+                        <circle cx="460" cy="70" r="8" fill="#E05D5D" filter="url(#sh03)" /><text x="460" y="95" text-anchor="middle" fill="#E05D5D" font-size="10">100</text>
+                        <text x="460" y="50" text-anchor="middle" fill="#E05D5D" font-size="10">← 外れ値</text>
+                        <text x="30" y="50" fill="#495057" font-size="11">小</text>
+                        <text x="490" y="50" text-anchor="end" fill="#495057" font-size="11">大</text>
+                        <!-- 矢印 -->
+                        <line x1="50" y1="120" x2="480" y2="120" stroke="#212529" stroke-width="2" marker-end="url(#arrow)" />
+                        <polygon points="480,115 490,120 480,125" fill="#212529" />
+                        <!-- 説明 -->
+                        <text x="260" y="145" text-anchor="middle" fill="#1A5F7A" font-size="12">外れ値(100)が存在しても、中央値は「6」のまま変わらない！</text>
+                        <text x="260" y="168" text-anchor="middle" fill="#495057" font-size="11">平均値は 1+2+3+4+5+6+7+8+100 ÷ 9 ≈ 15.1 に跳ね上がる</text>
+                    </svg>
+                    <p class="figure-caption">外れ値がある場合、平均値は大きく変動するが、中央値は影響を受けない。これが中央値の最大の強み。</p>
+                </div>
+
+                <div class="lesson-callout">
+                    <span class="lesson-callout-title">🏠 実務での使い分け：平均年収 vs 中央値年収</span>
+                    <p>「日本の平均年収は約430万円」というニュースを聞いたことはありませんか？実はこの数字は、一部の高額所得者に引き上げられている可能性があります。中央値年収は約360万円と、平均より低くなります。どちらが「実感に近いか」を考えたとき、<span class="text-highlight">所得のように外れ値（超高額所得者）が存在するデータでは中央値の方が実態を反映しやすい</span>と言えます。</p>
+                </div>
+            </div>
+
+            <!-- Step 04 -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 04</span>
+                <h4>最頻値：最もよく現れる値</h4>
+                <p><span class="text-highlight">最頻値（モード）</span>は、データの中で最も頻繁に出現する値です。平均値や中央値と異なり、<span class="text-highlight-red">質的データ（カテゴリデータ）にも使える</span>という特徴があります。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="160" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+                        <defs><filter id="sh04"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.10" /></filter></defs>
+                        <rect width="520" height="160" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="22" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">最頻値のイメージ：アンケート結果で最も多い回答</text>
+                        <!-- 棒グラフ -->
+                        <rect x="40" y="110" width="70" height="20" rx="3" fill="#4A8BA8" filter="url(#sh04)" />
+                        <text x="75" y="97" text-anchor="middle" fill="#495057" font-size="10">15人</text>
+                        <text x="75" y="138" text-anchor="middle" fill="#495057" font-size="10">満足</text>
+                        <rect x="130" y="75" width="70" height="55" rx="3" fill="#1A5F7A" filter="url(#sh04)" />
+                        <text x="165" y="60" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">← 最頻値</text>
+                        <text x="165" y="97" text-anchor="middle" fill="#FFF" font-size="10" font-weight="bold">42人</text>
+                        <text x="165" y="138" text-anchor="middle" fill="#495057" font-size="10">やや満足</text>
+                        <rect x="220" y="95" width="70" height="35" rx="3" fill="#7AB5CC" filter="url(#sh04)" />
+                        <text x="255" y="110" text-anchor="middle" fill="#FFF" font-size="10">28人</text>
+                        <text x="255" y="138" text-anchor="middle" fill="#495057" font-size="10">普通</text>
+                        <rect x="310" y="120" width="70" height="10" rx="3" fill="#E05D5D" filter="url(#sh04)" />
+                        <text x="345" y="105" text-anchor="middle" fill="#E05D5D" font-size="10">8人</text>
+                        <text x="345" y="138" text-anchor="middle" fill="#495057" font-size="10">やや不満</text>
+                        <rect x="400" y="125" width="70" height="5" rx="3" fill="#E05D5D" filter="url(#sh04)" opacity="0.5" />
+                        <text x="435" y="115" text-anchor="middle" fill="#E05D5D" font-size="10">3人</text>
+                        <text x="435" y="138" text-anchor="middle" fill="#495057" font-size="10">不満</text>
+                    </svg>
+                    <p class="figure-caption">「やや満足」が42人で最も多い → これが最頻値。質的データ（満足度）でも最頻値を求めることができる。</p>
+                </div>
+
+                <!-- ✏️ ちょこっと問題 -->
+                <div class="quiz-box">
+                    <p class="quiz-question">【かんたん確認】「7, 5, 8, 5, 9, 5, 6」というデータがある。このデータの最頻値（モード）はいくつ？</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="true">A. 5（3回出現）</div>
+                        <div class="quiz-option" data-correct="false">B. 6（1回出現）</div>
+                        <div class="quiz-option" data-correct="false">C. 7（1回出現）</div>
+                        <div class="quiz-option" data-correct="false">D. 最頻値は存在しない</div>
+                    </div>
+                    <div class="quiz-feedback">正解は「A. 5」です。データを整理すると 5が3回、6が1回、7が1回、8が1回、9が1回。最も頻繁に出現するのは「5」で、これが最頻値です。</div>
+                </div>
+
+                <div class="lesson-callout" style="border-color: var(--color-orange);">
+                    <span class="lesson-callout-title" style="color: var(--color-orange);">📊 3つの代表値の使い分け早見表</span>
+                    <div class="lesson-callout-grid">
+                        <div class="grid-cell"><span class="label">平均値</span><span class="value" style="font-size: 13px;">量的データで<br>外れ値が少ない</span></div>
+                        <div class="grid-cell"><span class="label">中央値</span><span class="value" style="font-size: 13px;">量的データで<br>外れ値が多い</span></div>
+                        <div class="grid-cell"><span class="label">最頻値</span><span class="value" style="font-size: 13px;">質的データ／<br>カテゴリデータ</span></div>
+                        <div class="grid-cell"><span class="label">すべて使う</span><span class="value" style="font-size: 13px;">分布の形状を<br>総合的に把握</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 05 -->
+            <div class="lesson-step success">
+                <span class="lesson-step-meta">Step 05</span>
+                <h4>まとめ：データの性質に合わせて代表値を選ぶ</h4>
+                <div class="summary-box">
+                    <h4>📌 この単元の3つの重要ポイント</h4>
+                    <ul>
+                        <li><strong>平均値はすべてのデータを平等に扱うが、外れ値に弱い。</strong>バランスの取れたデータには最適だが、極端な値があると大きく歪められる。</li>
+                        <li><strong>中央値は外れ値に強いが、データの細かい変動を無視する。</strong>所得や資産のように極端な分布を持つデータに適している。</li>
+                        <li><strong>最頻値は質的データにも使える唯一の代表値。</strong>アンケートの回答分布など、「最も一般的な意見」を知りたい場合に有効。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Column -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">番外編 (Column)</span>
+                <h4>【番外編】ECサイトの「平均評価4.2」——あなたはその数字を信じますか？</h4>
+                <div class="column-box">
+                    <span class="lesson-callout-title">🛒 レビュー評価の裏に隠れた「代表値の罠」</span>
+                    <p>Amazonや楽天市場で「平均評価 4.2」という商品を見たとき、あなたはどのように解釈しますか？この「4.2」という数字は、5段階評価の「平均値」です。しかしここには代表値の罠が潜んでいます。</p>
+                    <p>例えば「5点（最高）」が80%で「1点（最低）」が20%の場合、平均は $5 \times 0.8 + 1 \times 0.2 = 4.2$ になります。この場合、最頻値は「5点」です。「平均4.2」という数字からは「多くの人が満足している」という印象を受けますが、実際には20%の人が非常に不満を持っている可能性があります。<span class="text-highlight-red">平均値だけを見るのではなく、分布（ヒストグラム）と中央値・最頻値も合わせて確認する</span>ことで、より正確な判断ができます。これこそが統計リテラシーの本質です。</p>
+                </div>
+            </div>
+
+            <!-- Quiz -->
+            <div class="quiz-box">
+                <p class="quiz-question">【確認問題】ある企業の社員9人の年収データ（万円）が [300, 350, 380, 400, 420, 450, 500, 550, 2000] だった。このデータの代表値として最も適切なのは？</p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-correct="false">A. 平均値（約483万円）</div>
+                    <div class="quiz-option" data-correct="true">B. 中央値（420万円）</div>
+                    <div class="quiz-option" data-correct="false">C. 最頻値（該当なし）</div>
+                    <div class="quiz-option" data-correct="false">D. すべて同じくらい適切</div>
+                </div>
+                <div class="quiz-feedback">正解は「B. 中央値（420万円）」です。2000万円という外れ値（おそらく経営者の年収）が存在するため、平均値は483万円と実態より高く出てしまいます。データの中心を正しく表すには中央値が適切です。</div>
+            </div>
+
+        </div>
+        <footer class="lesson-footer-nav">
+            <a href="02.html" class="btn-secondary">&larr; 前の単元へ</a>
+            <a href="index.html" class="btn btn-primary">目次に戻る</a>
+        </footer>
+    </article>
+</main>
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-left"><div class="footer-logo">Otona Statistics</div><p>大人のための統計学学び直しプラットフォーム</p></div>
+        <div class="footer-right"><p class="copyright">&copy; 2026 Otona Statistics.</p></div>
+    </div>
+</footer>
+<script src="../js/main.js"></script>
+</body>
+</html>

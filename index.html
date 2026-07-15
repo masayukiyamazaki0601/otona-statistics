@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大人の統計学入門 | Otona Statistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        @keyframes float3d {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            25% { transform: translateY(-6px) rotateX(2deg); }
+            75% { transform: translateY(3px) rotateX(-1deg); }
+        }
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(26,95,122,0.15)); }
+            50% { filter: drop-shadow(0 0 25px rgba(26,95,122,0.35)); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero {
+            perspective: 1200px;
+            overflow: hidden;
+        }
+        .hero svg {
+            animation: float3d 6s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 8px 20px rgba(26,95,122,0.12));
+            transform: perspective(800px) rotateX(1deg);
+        }
+        .hero:hover svg {
+            animation: float3d 3s ease-in-out infinite, glowPulse 1.5s ease-in-out infinite;
+        }
+        .hero-content {
+            animation: slideUp 0.8s ease-out;
+        }
+        .card {
+            transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+            perspective: 800px;
+        }
+        .card:hover {
+            transform: perspective(800px) rotateX(2deg) translateY(-4px);
+            box-shadow: 0 20px 40px rgba(26,95,122,0.12);
+        }
+        .chapter-row {
+            transition: all 0.3s ease;
+        }
+        .chapter-row:hover {
+            transform: translateX(6px);
+            background-color: rgba(233,236,239,0.4);
+        }
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+        .ruler-motif {
+            animation: float3d 8s ease-in-out infinite;
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .hero-container {
+            position: relative;
+            z-index: 1;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            background: none;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 2px;
+            background: var(--color-ink);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 80px; left: 0;
+            width: 100%; height: calc(100vh - 80px);
+            background: var(--color-paper);
+            z-index: 99;
+            padding: 40px 24px;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a {
+            font-size: 20px;
+            font-weight: 500;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--color-paper-line);
+        }
+        .stats-grid .stat-item {
+            transition: all 0.3s ease;
+        }
+        .stats-grid .stat-item:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--color-teal-light) 0%, transparent 50%);
+        }
+        @media (max-width: 820px) {
+            .hamburger { display: flex; }
+            .nav { display: none; }
+            .header-cta { display: none; }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-inner container">
+        <h1 class="logo"><a href="index.html" style="color: inherit;">Otona Statistics</a></h1>
+        <nav class="nav">
+            <ul>
+                <li><a href="curriculum/index.html">カリキュラム</a></li>
+                <li><a href="#about">統計学とは</a></li>
+                <li><a href="#sample">学習サンプル</a></li>
+            </ul>
+        </nav>
+        <div class="header-cta">
+            <a href="curriculum/01.html" class="btn btn-primary">学習を始める</a>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+<div class="mobile-nav" id="mobile-nav">
+    <a href="curriculum/index.html">📚 カリキュラム</a>
+    <a href="#about">📖 統計学とは</a>
+    <a href="#sample">🔍 学習サンプル</a>
+    <a href="curriculum/01.html" class="btn btn-primary" style="text-align: center; margin-top: 20px;">🚀 学習を始める</a>
+</div>
+
+<main>
+    <section class="hero grid-bg">
+        <canvas id="hero-canvas"></canvas>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h2 class="hero-title">データの<br>「なぜ」を読み解く。</h2>
+                <p class="hero-lead">ビジネスパーソンに必須の統計リテラシー。<br>「平均」「ばらつき」「相関」の本質を、<br>図解と対話で理解する全50単元。</p>
+                <div class="hero-actions">
+                    <a href="curriculum/01.html" class="btn btn-primary">🚀 学習を始める</a>
+                    <a href="#curriculum" class="btn-secondary">📋 カリキュラムを見る</a>
+                </div>
+            </div>
+            <div class="ruler-motif">
+                <div class="ruler-tick major"><span>01</span></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick major"><span>02</span></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick major"><span>03</span></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick major"><span>04</span></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick minor"></div>
+                <div class="ruler-tick major"><span>05</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-strip">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-label">📊 総単元数</span><span class="stat-value">50<span class="stat-unit"> units</span></span></div>
+                <div class="stat-item"><span class="stat-label">📚 章数</span><span class="stat-value">05<span class="stat-unit"> chapters</span></span></div>
+                <div class="stat-item"><span class="stat-label">⏱ 想定所要時間</span><span class="stat-value">12<span class="stat-unit"> hrs</span></span></div>
+                <div class="stat-item"><span class="stat-label">🎓 前提知識</span><span class="stat-value">中学数学</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sample" class="sample-section">
+        <div class="container">
+            <div class="sample-grid">
+                <div class="sample-left">
+                    <div class="card grid-bg">
+                        <span class="sample-chapter">Chapter 01 / Unit 01</span>
+                        <h3 class="sample-title">📊 データの種類と尺度</h3>
+                        <div class="sample-body">
+                            <p>「男性／女性」「気温（℃）」「身長（cm）」——これらはすべて「データ」ですが、その性質はまったく異なります。</p>
+                            <div class="math-formula">質的データ $\neq$ 量的データ<br>名義尺度 $\rightarrow$ 順序尺度 $\rightarrow$ 間隔尺度 $\rightarrow$ 比例尺度</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sample-right">
+                    <h2 class="section-title">「なんとなく」を<br>「確かな判断」に変える。</h2>
+                    <p>ビジネスの現場では日々、無数のデータが飛び交っています。平均値、アンケート満足度、売上予測——しかし、これらの数字を正しく解釈できなければ、誤った意思決定につながりかねません。</p>
+                    <p>本カリキュラムでは、統計学を「公式の暗記」ではなく、「データを読み解くための思考の枠組み」として身につけます。</p>
+                    <a href="curriculum/01.html" class="btn-secondary">第1単元を読む →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="curriculum" class="chapter-list-section">
+        <div class="container">
+            <h2 class="section-title text-center">📋 カリキュラム構成</h2>
+            <div class="chapter-list">
+                <a href="curriculum/index.html#ch01" class="chapter-row">
+                    <div class="chapter-number">01</div>
+                    <div class="chapter-info"><h3 class="chapter-title">📊 データの基礎</h3><p class="chapter-desc">データの種類、尺度水準、分布の見方。統計学の土台を固める。</p></div>
+                    <div class="chapter-units">8 units</div>
+                </a>
+                <a href="curriculum/index.html#ch02" class="chapter-row">
+                    <div class="chapter-number">02</div>
+                    <div class="chapter-info"><h3 class="chapter-title">📈 記述統計</h3><p class="chapter-desc">平均・分散・標準偏差でデータの特徴を把握する。</p></div>
+                    <div class="chapter-units">12 units</div>
+                </a>
+                <a href="curriculum/index.html#ch03" class="chapter-row">
+                    <div class="chapter-number">03</div>
+                    <div class="chapter-info"><h3 class="chapter-title">🎲 確率と確率分布</h3><p class="chapter-desc">確率の基本から正規分布まで。不確実性を定量化する思考法。</p></div>
+                    <div class="chapter-units">12 units</div>
+                </a>
+                <a href="curriculum/index.html#ch04" class="chapter-row">
+                    <div class="chapter-number">04</div>
+                    <div class="chapter-info"><h3 class="chapter-title">🔬 推測統計</h3><p class="chapter-desc">標本から全体を推定する。区間推定・仮説検定の本質を理解する。</p></div>
+                    <div class="chapter-units">10 units</div>
+                </a>
+                <a href="curriculum/index.html#ch05" class="chapter-row">
+                    <div class="chapter-number">05</div>
+                    <div class="chapter-info"><h3 class="chapter-title">🔗 相関と回帰</h3><p class="chapter-desc">相関係数・回帰分析によるデータ間の関係性の読み解き方。</p></div>
+                    <div class="chapter-units">8 units</div>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-left"><div class="footer-logo">Otona Statistics</div><p>大人のための統計学学び直しプラットフォーム</p></div>
+        <div class="footer-right">
+            <ul class="footer-nav">
+                <li><a href="#">運営者情報</a></li>
+                <li><a href="#">利用規約</a></li>
+                <li><a href="#">プライバシーポリシー</a></li>
+                <li><a href="#">お問い合わせ</a></li>
+            </ul>
+            <p class="copyright">&copy; 2026 Otona Statistics.</p>
+        </div>
+    </div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

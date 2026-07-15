@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データの種類と尺度 | Otona Statistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        /* ===== 3D アニメーション ===== */
+        @keyframes float3d {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            25% { transform: translateY(-6px) rotateX(2deg); }
+            75% { transform: translateY(3px) rotateX(-1deg); }
+        }
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(26,95,122,0.2)); }
+            50% { filter: drop-shadow(0 0 20px rgba(26,95,122,0.4)); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: perspective(800px) rotateY(-10deg) translateX(-30px); }
+            to { opacity: 1; transform: perspective(800px) rotateY(0deg) translateX(0); }
+        }
+        @keyframes barGrow {
+            from { transform: scaleY(0); transform-origin: bottom; }
+            to { transform: scaleY(1); transform-origin: bottom; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(26,95,122,0.15); }
+            50% { box-shadow: 0 0 25px rgba(26,95,122,0.3); }
+        }
+
+        /* 3D パースペクティブ */
+        .figure-container {
+            perspective: 1200px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+        }
+        .figure-container svg {
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08));
+            transform: perspective(800px) rotateX(1deg);
+            transition: transform 0.6s ease, filter 0.6s ease;
+            animation: float3d 6s ease-in-out infinite;
+        }
+        .figure-container:hover svg {
+            transform: perspective(800px) rotateX(0deg) scale(1.02);
+            filter: drop-shadow(0 12px 30px rgba(26,95,122,0.2));
+            animation: glow 2s ease-in-out infinite;
+        }
+        .figure-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(26,95,122,0.12);
+        }
+
+        /* グラデーション背景の流れるエフェクト */
+        .lesson-callout {
+            animation: cardEntrance 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .lesson-callout::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--color-teal), #4A8BA8, var(--color-teal));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+        .lesson-callout[style*="orange"]::after {
+            background: linear-gradient(90deg, var(--color-orange), #F08A8A, var(--color-orange));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* ステップサークルを3D化 */
+        .lesson-step::before {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 3px rgba(26,95,122,0.1);
+        }
+        .lesson-step:hover::before {
+            transform: scale(1.3);
+            box-shadow: 0 0 0 6px rgba(26,95,122,0.2), 0 0 20px rgba(26,95,122,0.2);
+        }
+
+        /* リッチカード */
+        .rich-card {
+            background: linear-gradient(135deg, var(--color-teal-light) 0%, #FFFFFF 60%, var(--color-teal-light) 100%);
+            background-size: 200% 200%;
+            border: 1px solid var(--color-teal);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlow 3s ease-in-out infinite;
+            transform: perspective(800px) rotateX(1deg);
+            transition: all 0.5s ease;
+        }
+        .rich-card:hover {
+            transform: perspective(800px) rotateX(0deg) scale(1.01);
+        }
+        .rich-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--color-teal), #4A8BA8, #7AB5CC, var(--color-teal));
+            background-size: 100% 300%;
+            animation: shimmer 3s linear infinite;
+        }
+        .rich-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 100%; height: 200%;
+            background: radial-gradient(circle, rgba(26,95,122,0.04) 0%, transparent 70%);
+            animation: float3d 8s ease-in-out infinite;
+        }
+        .rich-card h5 {
+            font-family: var(--font-serif);
+            color: var(--color-teal);
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+        .rich-card p {
+            font-size: 14px;
+            color: var(--color-ink-soft);
+            line-height: 1.8;
+        }
+
+        /* summary-box 光る枠 */
+        .summary-box {
+            animation: pulseGlow 4s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+        .summary-box:hover {
+            transform: scale(1.01);
+        }
+
+        /* column-box エフェクト */
+        .column-box {
+            position: relative;
+            overflow: hidden;
+        }
+        .column-box::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26,95,122,0.06), transparent);
+            animation: float3d 5s ease-in-out infinite;
+        }
+
+        /* canvas-container 3D */
+        .canvas-container {
+            transition: all 0.5s ease;
+        }
+        .canvas-container:hover {
+            transform: perspective(800px) rotateX(2deg);
+            box-shadow: 0 15px 35px rgba(26,95,122,0.12);
+        }
+
+        /* 3D フローティングラベル */
+        .text-highlight {
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .text-highlight:hover {
+            color: var(--color-teal);
+            transform: scale(1.05);
+        }
+        .text-highlight-red:hover {
+            color: var(--color-orange);
+            transform: scale(1.05);
+        }
+
+        /* グリッド背景に動き */
+        .grid-bg {
+            position: relative;
+        }
+        .grid-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(26,95,122,0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 50%, rgba(26,95,122,0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-inner container">
+        <h1 class="logo"><a href="../index.html" style="color: inherit;">Otona Statistics</a></h1>
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">カリキュラム</a></li>
+                <li><a href="../index.html#about">統計学とは</a></li>
+                <li><a href="../index.html#sample">学習サンプル</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<main class="container">
+    <div class="lesson-breadcrumbs">
+        <a href="../index.html">ホーム</a> > <a href="index.html">カリキュラム</a> > 第1章 データの基礎 > 単元01
+    </div>
+    <article class="lesson-container">
+        <header class="lesson-header">
+            <span class="lesson-chapter-label">Chapter 01 / Unit 01</span>
+            <h2 class="lesson-title">データの種類と尺度（質的データと量的データ）</h2>
+        </header>
+
+        <div class="lesson-flow">
+            <!-- ========== Step 01 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 01</span>
+                <h4>そもそも「データ」とは何か</h4>
+                <p>私たちの身の回りには、膨大な「データ」があふれています。スマートフォンの天気アプリに表示される気温、ショッピングサイトのレビュー評価、通勤経路の所要時間——これらはすべてデータです。しかし、統計学では、これらをひとくくりに扱いません。データを正しく分析するための第一歩は、<span class="text-highlight">目の前のデータがどの「種類」に分類されるか</span>を見極めることです。</p>
+                <div class="figure-container">
+                    <svg width="520" height="260" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="qualGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1A5F7A;stop-opacity:0.12" />
+                                <stop offset="100%" style="stop-color:#4A8BA8;stop-opacity:0.06" />
+                            </linearGradient>
+                            <linearGradient id="quantGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#E05D5D;stop-opacity:0.12" />
+                                <stop offset="100%" style="stop-color:#1A5F7A;stop-opacity:0.06" />
+                            </linearGradient>
+                            <linearGradient id="tealToLight" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1A5F7A" />
+                                <stop offset="100%" style="stop-color:#4A8BA8" />
+                            </linearGradient>
+                            <filter id="shadow1">
+                                <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1A5F7A" flood-opacity="0.15" />
+                            </filter>
+                        </defs>
+                        <rect width="520" height="260" fill="#F8F9FA" rx="12" />
+
+                        <!-- 左カード：質的データ -->
+                        <rect x="25" y="30" width="225" height="200" rx="12" fill="url(#qualGrad)" stroke="#1A5F7A" stroke-width="2" filter="url(#shadow1)" />
+                        <rect x="25" y="30" width="225" height="44" rx="12" fill="#1A5F7A" opacity="0.9" />
+                        <text x="137" y="58" text-anchor="middle" fill="#FFFFFF" font-family="'Shippori Mincho',serif" font-size="16" font-weight="bold">📂 質的データ</text>
+                        <text x="137" y="90" text-anchor="middle" fill="#495057" font-size="13">カテゴリ（分類）で表される</text>
+
+                        <!-- アイコン付きバッジ -->
+                        <rect x="42" y="110" width="90" height="36" rx="18" fill="#1A5F7A" opacity="0.12" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="87" y="133" text-anchor="middle" fill="#1A5F7A" font-size="13" font-weight="500">👤 男性/女性</text>
+                        <rect x="145" y="110" width="90" height="36" rx="18" fill="#1A5F7A" opacity="0.12" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="190" y="133" text-anchor="middle" fill="#1A5F7A" font-size="13" font-weight="500">🩸 血液型</text>
+                        <rect x="60" y="158" width="90" height="36" rx="18" fill="#1A5F7A" opacity="0.08" stroke="#1A5F7A" stroke-width="1" stroke-dasharray="4,3" />
+                        <text x="105" y="181" text-anchor="middle" fill="#495057" font-size="12">🗾 都道府県</text>
+                        <rect x="160" y="158" width="75" height="36" rx="18" fill="#1A5F7A" opacity="0.08" stroke="#1A5F7A" stroke-width="1" stroke-dasharray="4,3" />
+                        <text x="198" y="181" text-anchor="middle" fill="#495057" font-size="12">💼 職業</text>
+
+                        <text x="137" y="218" text-anchor="middle" fill="#1A5F7A" font-family="'Noto Sans JP',sans-serif" font-size="11" opacity="0.7">「平均」は計算できない</text>
+
+                        <!-- 中央の⇔ -->
+                        <text x="255" y="130" text-anchor="middle" fill="#ADB5BD" font-size="28" font-weight="bold">⇔</text>
+
+                        <!-- 右カード：量的データ -->
+                        <rect x="270" y="30" width="225" height="200" rx="12" fill="url(#quantGrad)" stroke="#E05D5D" stroke-width="2" filter="url(#shadow1)" />
+                        <rect x="270" y="30" width="225" height="44" rx="12" fill="#E05D5D" opacity="0.9" />
+                        <text x="382" y="58" text-anchor="middle" fill="#FFFFFF" font-family="'Shippori Mincho',serif" font-size="16" font-weight="bold">📊 量的データ</text>
+                        <text x="382" y="90" text-anchor="middle" fill="#495057" font-size="13">数値（量）で表される</text>
+
+                        <rect x="285" y="110" width="90" height="36" rx="18" fill="#E05D5D" opacity="0.12" stroke="#E05D5D" stroke-width="1" />
+                        <text x="330" y="133" text-anchor="middle" fill="#E05D5D" font-size="13" font-weight="500">🌡 気温（℃）</text>
+                        <rect x="390" y="110" width="90" height="36" rx="18" fill="#1A5F7A" opacity="0.12" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="435" y="133" text-anchor="middle" fill="#1A5F7A" font-size="13" font-weight="500">📏 身長（cm）</text>
+                        <rect x="300" y="158" width="85" height="36" rx="18" fill="#E05D5D" opacity="0.08" stroke="#E05D5D" stroke-width="1" stroke-dasharray="4,3" />
+                        <text x="342" y="181" text-anchor="middle" fill="#495057" font-size="12">💰 収入（円）</text>
+                        <rect x="395" y="158" width="85" height="36" rx="18" fill="#1A5F7A" opacity="0.08" stroke="#1A5F7A" stroke-width="1" stroke-dasharray="4,3" />
+                        <text x="437" y="181" text-anchor="middle" fill="#495057" font-size="12">⏱ 時間（秒）</text>
+
+                        <text x="382" y="218" text-anchor="middle" fill="#E05D5D" font-family="'Noto Sans JP',sans-serif" font-size="11" opacity="0.7">「平均」を計算できる ✓</text>
+                    </svg>
+                    <p class="figure-caption">データの二大分類：質的データ（カテゴリ）と量的データ（数値）。「平均が計算できるか」が最大の違い。</p>
+                </div>
+            </div>
+
+            <!-- ========== Step 02 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 02</span>
+                <h4>質的データと量的データの違い</h4>
+                <p>データはまず、<span class="text-highlight">「質的データ」</span> と <span class="text-highlight-red">「量的データ」</span> に大別されます。この区別は、そのデータに対して「計算（平均をとるなど）」が意味を持つかどうかで判断します。</p>
+                <div class="lesson-callout">
+                    <span class="lesson-callout-title">🏷 質的データ（カテゴリカルデータ）</span>
+                    <p>「男性」と「女性」、「東京都」と「大阪府」——これらは互いに異なる「カテゴリ」を区別するラベルです。足し算や平均を計算することに意味はありません。「血液型の平均 = A型」という計算は成立しません。</p>
+                </div>
+                <div class="lesson-callout" style="border-color: var(--color-orange);">
+                    <span class="lesson-callout-title" style="color: var(--color-orange);">📈 量的データ（数値データ）</span>
+                    <p>「気温 25℃」「身長 170cm」「売上 500万円」——これらは数値としての「量」を持ちます。足し算・引き算が可能で、平均値を求めることに意味があります。「平均気温 22.3℃」は成立します。</p>
+                </div>
+
+                <!-- リッチな比較図 -->
+                <div class="figure-container">
+                    <svg width="520" height="280" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="barQual1" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#1A5F7A" />
+                                <stop offset="100%" stop-color="#4A8BA8" />
+                            </linearGradient>
+                            <linearGradient id="barQual2" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#4A8BA8" />
+                                <stop offset="100%" stop-color="#7AB5CC" />
+                            </linearGradient>
+                            <linearGradient id="barQual3" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#7AB5CC" />
+                                <stop offset="100%" stop-color="#A8D1E0" />
+                            </linearGradient>
+                            <linearGradient id="barQuant1" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#E05D5D" />
+                                <stop offset="100%" stop-color="#F08A8A" />
+                            </linearGradient>
+                            <linearGradient id="barQuant2" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#F08A8A" />
+                                <stop offset="100%" stop-color="#F5B0B0" />
+                            </linearGradient>
+                            <linearGradient id="barQuant3" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#1A5F7A" />
+                                <stop offset="100%" stop-color="#4A8BA8" />
+                            </linearGradient>
+                            <filter id="shadow2">
+                                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.10" />
+                            </filter>
+                        </defs>
+                        <rect width="520" height="280" fill="#F8F9FA" rx="12" />
+
+                        <!-- 左：質的データ -->
+                        <text x="130" y="30" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">質的データの例：居住地域</text>
+                        <!-- 3D風棒グラフ -->
+                        <rect x="45" y="190" width="50" height="65" rx="4" fill="url(#barQual1)" filter="url(#shadow2)" />
+                        <rect x="45" y="190" width="50" height="4" rx="2" fill="#1A5F7A" opacity="0.3" />
+                        <text x="70" y="205" text-anchor="middle" fill="#FFF" font-size="10" font-weight="bold">42</text>
+                        <text x="70" y="270" text-anchor="middle" fill="#495057" font-size="11">東京</text>
+
+                        <rect x="107" y="210" width="50" height="45" rx="4" fill="url(#barQual2)" filter="url(#shadow2)" />
+                        <rect x="107" y="210" width="50" height="4" rx="2" fill="#4A8BA8" opacity="0.3" />
+                        <text x="132" y="223" text-anchor="middle" fill="#FFF" font-size="10" font-weight="bold">28</text>
+                        <text x="132" y="270" text-anchor="middle" fill="#495057" font-size="11">大阪</text>
+
+                        <rect x="170" y="230" width="50" height="25" rx="4" fill="url(#barQual3)" filter="url(#shadow2)" />
+                        <rect x="170" y="230" width="50" height="4" rx="2" fill="#7AB5CC" opacity="0.3" />
+                        <text x="195" y="244" text-anchor="middle" fill="#495057" font-size="10" font-weight="bold">15</text>
+                        <text x="195" y="270" text-anchor="middle" fill="#495057" font-size="11">福岡</text>
+
+                        <text x="130" y="72" text-anchor="middle" fill="#E05D5D" font-size="12">「居住地域の平均」= 無意味 ✗</text>
+                        <!-- バツ印 -->
+                        <text x="130" y="175" text-anchor="middle" fill="#E05D5D" font-size="40" opacity="0.3">✗</text>
+
+                        <!-- 区切り線 -->
+                        <line x1="255" y1="45" x2="255" y2="255" stroke="#DEE2E6" stroke-width="2" stroke-dasharray="6,4" />
+
+                        <!-- 右：量的データ -->
+                        <text x="390" y="30" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">量的データの例：歩数</text>
+
+                        <rect x="280" y="170" width="50" height="85" rx="4" fill="url(#barQuant1)" filter="url(#shadow2)" />
+                        <rect x="280" y="170" width="50" height="4" rx="2" fill="#E05D5D" opacity="0.3" />
+                        <text x="305" y="188" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">8,432</text>
+                        <text x="305" y="270" text-anchor="middle" fill="#495057" font-size="11">月曜</text>
+
+                        <rect x="345" y="200" width="50" height="55" rx="4" fill="url(#barQuant2)" filter="url(#shadow2)" />
+                        <rect x="345" y="200" width="50" height="4" rx="2" fill="#F08A8A" opacity="0.3" />
+                        <text x="370" y="215" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">5,219</text>
+                        <text x="370" y="270" text-anchor="middle" fill="#495057" font-size="11">火曜</text>
+
+                        <rect x="410" y="190" width="50" height="65" rx="4" fill="url(#barQuant3)" filter="url(#shadow2)" />
+                        <rect x="410" y="190" width="50" height="4" rx="2" fill="#1A5F7A" opacity="0.3" />
+                        <text x="435" y="208" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">6,800</text>
+                        <text x="435" y="270" text-anchor="middle" fill="#495057" font-size="11">水曜</text>
+
+                        <text x="390" y="72" text-anchor="middle" fill="#1A5F7A" font-size="12">「平均歩数 = 6,817歩」○</text>
+                        <!-- チェック -->
+                        <text x="390" y="155" text-anchor="middle" fill="#1A5F7A" font-size="40" opacity="0.3">✓</text>
+                    </svg>
+                    <p class="figure-caption">左：質的データはカテゴリごとの「個数」を数えられるが平均は無意味。右：量的データは数値の平均が意味を持つ。</p>
+                </div>
+
+                <!-- ✏️ ちょこっと問題 -->
+                <div class="quiz-box">
+                    <p class="quiz-question">【確認問題】次のうち、「量的データ」に分類されるものはどれ？</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">A. 血液型（A型 / B型 / O型）</div>
+                        <div class="quiz-option" data-correct="true">B. 体重（kg）</div>
+                        <div class="quiz-option" data-correct="false">C. 居住地域（東京 / 大阪 / 福岡）</div>
+                        <div class="quiz-option" data-correct="false">D. 性別（男性 / 女性）</div>
+                    </div>
+                    <div class="quiz-feedback">正解は「B. 体重（kg）」です。体重は数値として「量」を持ち、平均を計算することに意味があります。A・C・Dはカテゴリを区別する「質的データ」に分類されます。</div>
+                </div>
+            </div>
+
+            <!-- ========== Step 03 ========== -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">Step 03</span>
+                <h4>データの4つの尺度水準</h4>
+                <p>さらに細かく見ると、質的データと量的データは、それぞれ <span class="text-highlight">2つの「尺度水準」</span>に分類されます。統計学では、この尺度によって「そのデータに許される操作」が決まります。</p>
+
+                <!-- 4段階のSVG階層図 -->
+                <div class="figure-container">
+                    <svg width="520" height="180" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="s1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#1A5F7A" />
+                                <stop offset="100%" stop-color="#4A8BA8" />
+                            </linearGradient>
+                            <linearGradient id="s2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#4A8BA8" />
+                                <stop offset="100%" stop-color="#7AB5CC" />
+                            </linearGradient>
+                            <linearGradient id="s3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#E05D5D" />
+                                <stop offset="100%" stop-color="#F08A8A" />
+                            </linearGradient>
+                            <linearGradient id="s4" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#134A60" />
+                                <stop offset="100%" stop-color="#1A5F7A" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="520" height="180" fill="#F8F9FA" rx="12" />
+
+                        <!-- 名義尺度 -->
+                        <rect x="20" y="25" width="110" height="55" rx="10" fill="url(#s1)" />
+                        <text x="75" y="48" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="12" font-weight="bold">名義尺度</text>
+                        <text x="75" y="66" text-anchor="middle" fill="#FFF" opacity="0.8" font-size="10">男女・血液型</text>
+                        <!-- 矢印 -->
+                        <text x="137" y="58" text-anchor="middle" fill="#ADB5BD" font-size="20">→</text>
+
+                        <!-- 順序尺度 -->
+                        <rect x="150" y="35" width="110" height="45" rx="10" fill="url(#s2)" />
+                        <text x="205" y="52" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="12" font-weight="bold">順序尺度</text>
+                        <text x="205" y="68" text-anchor="middle" fill="#FFF" opacity="0.8" font-size="10">満足度1〜5</text>
+                        <text x="267" y="58" text-anchor="middle" fill="#ADB5BD" font-size="20">→</text>
+
+                        <!-- 間隔尺度 -->
+                        <rect x="280" y="45" width="110" height="35" rx="10" fill="url(#s3)" />
+                        <text x="335" y="58" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="12" font-weight="bold">間隔尺度</text>
+                        <text x="335" y="72" text-anchor="middle" fill="#FFF" opacity="0.8" font-size="10">気温（℃）</text>
+                        <text x="397" y="62" text-anchor="middle" fill="#ADB5BD" font-size="20">→</text>
+
+                        <!-- 比例尺度 -->
+                        <rect x="410" y="55" width="95" height="25" rx="10" fill="url(#s4)" />
+                        <text x="457" y="65" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="11" font-weight="bold">比例尺度</text>
+
+                        <!-- ラベル -->
+                        <text x="75" y="115" text-anchor="middle" fill="#495057" font-size="11">質的データ</text>
+                        <text x="205" y="115" text-anchor="middle" fill="#495057" font-size="11">質的データ</text>
+                        <text x="335" y="115" text-anchor="middle" fill="#495057" font-size="11">量的データ</text>
+                        <text x="457" y="115" text-anchor="middle" fill="#495057" font-size="11">量的データ</text>
+
+                        <!-- 下線グルーピング -->
+                        <rect x="20" y="125" width="240" height="20" rx="10" fill="#1A5F7A" opacity="0.08" />
+                        <text x="140" y="139" text-anchor="middle" fill="#1A5F7A" font-size="11">質的データ（カテゴリ）</text>
+                        <rect x="280" y="125" width="225" height="20" rx="10" fill="#E05D5D" opacity="0.08" />
+                        <text x="392" y="139" text-anchor="middle" fill="#E05D5D" font-size="11">量的データ（数値）</text>
+
+                        <!-- 情報量の矢印 -->
+                        <rect x="20" y="155" width="485" height="18" rx="9" fill="#E9ECEF" />
+                        <rect x="20" y="155" width="120" height="18" rx="9" fill="#1A5F7A" opacity="0.3" />
+                        <rect x="140" y="155" width="120" height="18" rx="9" fill="#4A8BA8" opacity="0.3" />
+                        <rect x="260" y="155" width="120" height="18" rx="9" fill="#E05D5D" opacity="0.3" />
+                        <rect x="380" y="155" width="125" height="18" rx="9" fill="#134A60" opacity="0.3" />
+                        <text x="262" y="168" text-anchor="middle" fill="#495057" font-size="9">情報量が増える →</text>
+                    </svg>
+                    <p class="figure-caption">4つの尺度水準の関係性。左から右へ進むほど「情報量」が増え、計算の自由度が高まる。</p>
+                </div>
+
+                <div class="canvas-container" style="position: relative; overflow: hidden;">
+                    <canvas id="particle-bg" width="500" height="300" style="position: absolute; top: 0; left: 0; pointer-events: none; border-radius: 4px;"></canvas>
+                    <canvas id="data-type-canvas" width="500" height="300" style="position: relative; z-index: 1; background: transparent;"></canvas>
+                    <div class="canvas-controls">
+                        <label for="data-type-slider">🔍 尺度を選択：</label>
+                        <input type="range" id="data-type-slider" min="0" max="3" value="0" step="1">
+                        <span class="value-display" id="data-type-value">質的データ（名義尺度）</span>
+                    </div>
+                </div>
+                <p>スライダーを動かすと各尺度の具体例が表示されます。ポイントは、<span class="text-highlight-red">名義尺度 → 順序尺度 → 間隔尺度 → 比例尺度</span> の順に、データに許される「操作の自由度」が増えていく点です。</p>
+            </div>
+
+            <!-- ========== Step 04 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 04</span>
+                <h4>比例尺度が最も情報量が多い</h4>
+                <p>4つの尺度の中で最も豊かな情報を持つのは <span class="text-highlight">比例尺度</span> です。比例尺度は「ゼロに意味がある」という特徴を持ちます。身長 0cm は「身長がまったくない状態」を意味するため、「倍率」の計算が可能です。「Aさんの身長はBさんの2倍」という表現が成立します。</p>
+                
+                <div class="figure-container">
+                    <svg width="520" height="220" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="hGradTeal" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#1A5F7A" />
+                                <stop offset="100%" stop-color="#4A8BA8" />
+                            </linearGradient>
+                            <linearGradient id="hGradOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#E05D5D" />
+                                <stop offset="100%" stop-color="#F08A8A" />
+                            </linearGradient>
+                            <filter id="shadow3">
+                                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.15" />
+                            </filter>
+                        </defs>
+                        <rect width="520" height="220" fill="#F8F9FA" rx="12" />
+
+                        <text x="260" y="28" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">4つの尺度と「できる操作」の比較</text>
+
+                        <!-- テーブルヘッダー -->
+                        <rect x="20" y="42" width="120" height="32" rx="6" fill="#1A5F7A" />
+                        <text x="80" y="63" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">📏 尺度</text>
+                        <rect x="148" y="42" width="100" height="32" rx="6" fill="#1A5F7A" />
+                        <text x="198" y="63" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">🏷 分類</text>
+                        <rect x="256" y="42" width="100" height="32" rx="6" fill="#1A5F7A" />
+                        <text x="306" y="63" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">📊 平均</text>
+                        <rect x="364" y="42" width="140" height="32" rx="6" fill="#1A5F7A" />
+                        <text x="434" y="63" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">🔄 倍率</text>
+
+                        <!-- 名義尺度 -->
+                        <rect x="20" y="80" width="120" height="28" rx="4" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="80" y="99" text-anchor="middle" fill="#1A5F7A" font-size="12">名義尺度</text>
+                        <rect x="148" y="80" width="100" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="198" y="99" text-anchor="middle" fill="#495057" font-size="11">質的</text>
+                        <rect x="256" y="80" width="100" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="306" y="99" text-anchor="middle" fill="#E05D5D" font-size="18">✗</text>
+                        <rect x="364" y="80" width="140" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="434" y="99" text-anchor="middle" fill="#E05D5D" font-size="18">✗</text>
+
+                        <!-- 順序尺度 -->
+                        <rect x="20" y="112" width="120" height="28" rx="4" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="80" y="131" text-anchor="middle" fill="#1A5F7A" font-size="12">順序尺度</text>
+                        <rect x="148" y="112" width="100" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="198" y="131" text-anchor="middle" fill="#495057" font-size="11">質的</text>
+                        <rect x="256" y="112" width="100" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="306" y="131" text-anchor="middle" fill="#E05D5D" font-size="18">✗</text>
+                        <rect x="364" y="112" width="140" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="434" y="131" text-anchor="middle" fill="#E05D5D" font-size="18">✗</text>
+
+                        <!-- 間隔尺度（強調なし） -->
+                        <rect x="20" y="144" width="120" height="28" rx="4" fill="#FDF2F2" stroke="#E05D5D" stroke-width="1" />
+                        <text x="80" y="163" text-anchor="middle" fill="#E05D5D" font-size="12">間隔尺度</text>
+                        <rect x="148" y="144" width="100" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="198" y="163" text-anchor="middle" fill="#1A5F7A" font-size="11">量的</text>
+                        <rect x="256" y="144" width="100" height="28" rx="4" fill="#FDF2F2" stroke="#E05D5D" stroke-width="1" />
+                        <text x="306" y="163" text-anchor="middle" fill="#1A5F7A" font-size="18">○</text>
+                        <rect x="364" y="144" width="140" height="28" rx="4" fill="#FFF" stroke="#DEE2E6" stroke-width="1" />
+                        <text x="434" y="163" text-anchor="middle" fill="#E05D5D" font-size="18">✗</text>
+
+                        <!-- 比例尺度（ハイライト） -->
+                        <rect x="20" y="176" width="120" height="32" rx="6" fill="url(#hGradTeal)" filter="url(#shadow3)" />
+                        <text x="80" y="197" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">比例尺度</text>
+                        <rect x="148" y="176" width="100" height="32" rx="6" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1.5" />
+                        <text x="198" y="197" text-anchor="middle" fill="#1A5F7A" font-size="12" font-weight="bold">量的</text>
+                        <rect x="256" y="176" width="100" height="32" rx="6" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1.5" />
+                        <text x="306" y="197" text-anchor="middle" fill="#1A5F7A" font-size="20" font-weight="bold">✓</text>
+                        <rect x="364" y="176" width="140" height="32" rx="6" fill="#E8F1F5" stroke="#1A5F7A" stroke-width="1.5" />
+                        <text x="434" y="197" text-anchor="middle" fill="#1A5F7A" font-size="20" font-weight="bold">✓</text>
+                    </svg>
+                    <p class="figure-caption">比例尺度のみが「平均」と「倍率」の両方を計算できる。ハイライト行が比例尺度。</p>
+                </div>
+
+                <div class="rich-card">
+                    <h5>💡 間隔尺度 vs 比例尺度 の違い</h5>
+                    <p>「気温 20℃は10℃の2倍の暖かさか？」——答えは<strong>否</strong>です。0℃は「熱がまったくない」ではなく「水が凍る温度」にすぎないからです。一方「200cmは100cmの2倍の長さ」は成立します。これが「ゼロの意味」の違いです。</p>
+                </div>
+
+                <div class="lesson-callout" style="max-width: 500px;">
+                    <span class="lesson-callout-title">🎯 ここがポイント</span>
+                    <div class="lesson-callout-grid">
+                        <div class="grid-cell">
+                            <span class="label">間隔尺度の例</span>
+                            <span class="value" style="font-size: 15px;">🌡 気温20℃は<br>10℃の2倍？</span>
+                        </div>
+                        <div class="grid-cell" style="border-color: var(--color-orange);">
+                            <span class="label" style="color: var(--color-orange);">答え</span>
+                            <span class="value" style="color: var(--color-orange); font-size: 16px;">✗ NO<br><span style="font-size: 11px;">0℃に絶対的意味がない</span></span>
+                        </div>
+                        <div class="grid-cell" style="border-color: var(--color-teal);">
+                            <span class="label" style="color: var(--color-teal);">比例尺度なら</span>
+                            <span class="value" style="color: var(--color-teal); font-size: 16px;">✓ YES<br><span style="font-size: 11px;">200cmは100cmの2倍</span></span>
+                        </div>
+                        <div class="grid-cell">
+                            <span class="label">比例尺度の例</span>
+                            <span class="value" style="font-size: 15px;">📏 身長・💰 収入<br>⏱ 時間・📐 距離</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== Step 05 ========== -->
+            <div class="lesson-step success">
+                <span class="lesson-step-meta">Step 05</span>
+                <h4>まとめ：データを見たらまず「尺度」を問う</h4>
+                <div class="summary-box">
+                    <h4>📌 この単元の3つの重要ポイント</h4>
+                    <ul>
+                        <li><strong>データは「質的データ」と「量的データ」に大別される。</strong>この区別を見誤ると、基本的な統計量を誤って計算してしまう。</li>
+                        <li><strong>質的は「名義尺度」「順序尺度」、量的は「間隔尺度」「比例尺度」に細分化。</strong>尺度が上がるごとに操作の幅が広がる。</li>
+                        <li><strong>比例尺度が最も情報量が多く、四則演算すべてが意味を持つ。</strong>「ゼロの意味」が比例尺度と間隔尺度の分かれ目となる。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ========== Column ========== -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">番外編 (Column)</span>
+                <h4>【番外編】ネットショッピングのレビュー分析AIは、「質的データ」と「量的データ」をどう使い分けているか</h4>
+                <div class="column-box">
+                    <span class="lesson-callout-title">🤖 AIの裏側で動いている「データの種類」の見分け方</span>
+                    <p>Amazonや楽天市場で商品を購入する際、レビューを参考にしたことがあるでしょう。「⭐⭐⭐⭐☆（4つ星）」という評価と、「この商品は軽くて使いやすい」というテキストレビュー。これらはAIによってまったく異なる方法で処理されています。</p>
+                    <p>星評価（1〜5）は、厳密には「順序尺度（質的データ）」です。星4つは星3つより評価が高いことは確かですが、「星4つは星2つの2倍優れている」とは言えません。しかし多くのAIは実用上、これを「間隔尺度（量的データ）」とみなして平均評価を計算しています。<span class="text-highlight">実務では厳密な理論と実用性のバランス</span>をとる必要があるのです。</p>
+                    <p>一方テキストレビューは「名義尺度（質的データ）」です。AIはこれを「ポジティブ／ネガティブ」に分類したり「軽い」「丈夫」「デザインが良い」といったトピックに自動分類します。このときAIは「単語の出現頻度」を数値化して処理しています。つまり<span class="text-highlight-red">「質的データを量的データに変換する」</span>という技術が、レコメンドAIやレビュー分析の背後で動いているのです。</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="lesson-footer-nav">
+            <a href="index.html" class="btn-secondary">&larr; 目次に戻る</a>
+            <a href="#" class="btn btn-primary">次の単元へ（準備中）</a>
+        </footer>
+    </article>
+</main>
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-left"><div class="footer-logo">Otona Statistics</div><p>大人のための統計学学び直しプラットフォーム</p></div>
+        <div class="footer-right"><p class="copyright">&copy; 2026 Otona Statistics.</p></div>
+    </div>
+</footer>
+<script src="../js/main.js"></script>
+</body>
+</html>

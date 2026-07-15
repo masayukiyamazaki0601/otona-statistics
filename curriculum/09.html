@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記述統計と推測統計の違い | Otona Statistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        @keyframes float3d { 0%,100% { transform: translateY(0px) rotateX(0deg); } 25% { transform: translateY(-6px) rotateX(2deg); } 75% { transform: translateY(3px) rotateX(-1deg); } }
+        @keyframes glowPulse { 0%,100% { filter: drop-shadow(0 0 8px rgba(26,95,122,0.2)); } 50% { filter: drop-shadow(0 0 20px rgba(26,95,122,0.4)); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes cardEntrance { from { opacity: 0; transform: perspective(800px) rotateY(-10deg) translateX(-30px); } to { opacity: 1; transform: perspective(800px) rotateY(0deg) translateX(0); } }
+        @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 10px rgba(26,95,122,0.15); } 50% { box-shadow: 0 0 25px rgba(26,95,122,0.3); } }
+        @keyframes drawLine { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+        @keyframes growBar { from { transform: scaleY(0); transform-origin: bottom; } to { transform: scaleY(1); transform-origin: bottom; } }
+        .figure-container { perspective: 1200px; transition: all 0.5s cubic-bezier(0.23,1,0.32,1); }
+        .figure-container svg { filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08)); transform: perspective(800px) rotateX(1deg); transition: transform 0.6s ease, filter 0.6s ease; animation: float3d 6s ease-in-out infinite; }
+        .figure-container:hover svg { transform: perspective(800px) rotateX(0deg) scale(1.02); filter: drop-shadow(0 12px 30px rgba(26,95,122,0.2)); animation: glowPulse 2s ease-in-out infinite; }
+        .figure-container:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(26,95,122,0.12); }
+        .lesson-callout { animation: cardEntrance 0.6s ease-out; position: relative; overflow: hidden; }
+        .lesson-callout::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--color-teal), #4A8BA8, var(--color-teal)); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+        .lesson-callout[style*="orange"]::after { background: linear-gradient(90deg, var(--color-orange), #F08A8A, var(--color-orange)); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+        .lesson-step::before { transition: all 0.3s ease; box-shadow: 0 0 0 3px rgba(26,95,122,0.1); }
+        .lesson-step:hover::before { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(26,95,122,0.2), 0 0 20px rgba(26,95,122,0.2); }
+        .rich-card { background: linear-gradient(135deg, var(--color-teal-light) 0%, #FFFFFF 60%, var(--color-teal-light) 100%); background-size: 200% 200%; border: 1px solid var(--color-teal); border-radius: 16px; padding: 28px; margin: 20px 0; position: relative; overflow: hidden; animation: pulseGlow 3s ease-in-out infinite; transform: perspective(800px) rotateX(1deg); transition: all 0.5s ease; }
+        .rich-card:hover { transform: perspective(800px) rotateX(0deg) scale(1.01); }
+        .rich-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--color-teal), #4A8BA8, #7AB5CC, var(--color-teal)); background-size: 100% 300%; animation: shimmer 3s linear infinite; }
+        .rich-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 200%; background: radial-gradient(circle, rgba(26,95,122,0.04) 0%, transparent 70%); animation: float3d 8s ease-in-out infinite; }
+        .rich-card h5 { font-family: var(--font-serif); color: var(--color-teal); font-size: 17px; margin-bottom: 10px; }
+        .rich-card p { font-size: 14px; color: var(--color-ink-soft); line-height: 1.8; }
+        .summary-box { animation: pulseGlow 4s ease-in-out infinite; transition: all 0.5s ease; }
+        .summary-box:hover { transform: scale(1.01); }
+        .column-box { position: relative; overflow: hidden; }
+        .column-box::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(26,95,122,0.06), transparent); animation: float3d 5s ease-in-out infinite; }
+        .canvas-container { transition: all 0.5s ease; }
+        .canvas-container:hover { transform: perspective(800px) rotateX(2deg); box-shadow: 0 15px 35px rgba(26,95,122,0.12); }
+        .text-highlight { position: relative; display: inline-block; transition: all 0.3s ease; }
+        .text-highlight:hover { color: var(--color-teal); transform: scale(1.05); }
+        .text-highlight-red:hover { color: var(--color-orange); transform: scale(1.05); }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-inner container">
+        <h1 class="logo"><a href="../index.html" style="color: inherit;">Otona Statistics</a></h1>
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">カリキュラム</a></li>
+                <li><a href="../index.html#about">統計学とは</a></li>
+                <li><a href="../index.html#sample">学習サンプル</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<main class="container">
+    <div class="lesson-breadcrumbs">
+        <a href="../index.html">ホーム</a> > <a href="index.html">カリキュラム</a> > 第2章 記述統計 > 単元09
+    </div>
+    <article class="lesson-container">
+        <header class="lesson-header">
+            <span class="lesson-chapter-label">Chapter 02 / Unit 09</span>
+            <h2 class="lesson-title">記述統計と推測統計の違い<br>——統計学の2大支柱</h2>
+        </header>
+
+        <div class="lesson-flow">
+            <!-- ========== Step 01 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 01</span>
+                <h4>統計学は大きく2つに分かれる</h4>
+                <p>統計学と一口に言っても、その役割は大きく2つに分かれます。それが <span class="text-highlight">「記述統計」</span> と <span class="text-highlight-red">「推測統計」</span> です。この2つの違いを理解することは、統計学の全体像を把握するうえで極めて重要です。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="240" viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="dsGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A5F7A" stop-opacity="0.12" /><stop offset="100%" stop-color="#4A8BA8" stop-opacity="0.06" /></linearGradient>
+                            <linearGradient id="isGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E05D5D" stop-opacity="0.12" /><stop offset="100%" stop-color="#F08A8A" stop-opacity="0.06" /></linearGradient>
+                            <filter id="sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1A5F7A" flood-opacity="0.15" /></filter>
+                        </defs>
+                        <rect width="520" height="240" fill="#F8F9FA" rx="12" />
+
+                        <!-- 統計学のルート -->
+                        <text x="260" y="30" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="18" font-weight="bold">📊 統計学</text>
+                        <line x1="260" y1="40" x2="260" y2="55" stroke="#1A5F7A" stroke-width="2" />
+                        <line x1="130" y1="55" x2="390" y2="55" stroke="#1A5F7A" stroke-width="2" />
+                        <line x1="130" y1="55" x2="130" y2="70" stroke="#1A5F7A" stroke-width="2" />
+                        <line x1="390" y1="55" x2="390" y2="70" stroke="#E05D5D" stroke-width="2" />
+
+                        <!-- 左：記述統計カード -->
+                        <rect x="20" y="75" width="220" height="150" rx="12" fill="url(#dsGrad)" stroke="#1A5F7A" stroke-width="2" filter="url(#sh)" />
+                        <rect x="20" y="75" width="220" height="40" rx="12" fill="#1A5F7A" opacity="0.9" />
+                        <text x="130" y="100" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">📋 記述統計</text>
+                        <text x="130" y="135" text-anchor="middle" fill="#1A5F7A" font-size="13" font-weight="bold">データを「要約・可視化」する</text>
+                        <text x="130" y="158" text-anchor="middle" fill="#495057" font-size="12">平均・分散・標準偏差</text>
+                        <text x="130" y="178" text-anchor="middle" fill="#495057" font-size="12">度数分布・ヒストグラム</text>
+                        <text x="130" y="198" text-anchor="middle" fill="#495057" font-size="12">箱ひげ図・散布図</text>
+                        <text x="130" y="216" text-anchor="middle" fill="#1A5F7A" font-size="11" opacity="0.7">「今あるデータ」を整理する</text>
+
+                        <!-- 右：推測統計カード -->
+                        <rect x="280" y="75" width="220" height="150" rx="12" fill="url(#isGrad)" stroke="#E05D5D" stroke-width="2" filter="url(#sh)" />
+                        <rect x="280" y="75" width="220" height="40" rx="12" fill="#E05D5D" opacity="0.9" />
+                        <text x="390" y="100" text-anchor="middle" fill="#FFF" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">🔬 推測統計</text>
+                        <text x="390" y="135" text-anchor="middle" fill="#E05D5D" font-size="13" font-weight="bold">データから「全体を推定」する</text>
+                        <text x="390" y="158" text-anchor="middle" fill="#495057" font-size="12">区間推定・信頼区間</text>
+                        <text x="390" y="178" text-anchor="middle" fill="#495057" font-size="12">仮説検定・t検定</text>
+                        <text x="390" y="198" text-anchor="middle" fill="#495057" font-size="12">回帰分析・予測</text>
+                        <text x="390" y="216" text-anchor="middle" fill="#E05D5D" font-size="11" opacity="0.7">「一部のデータ」から全体を推測</text>
+                    </svg>
+                    <p class="figure-caption">統計学の2大分類：記述統計（データの要約）と推測統計（全体の推定）</p>
+                </div>
+            </div>
+
+            <!-- ========== Step 02 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 02</span>
+                <h4>記述統計とは：「今あるデータ」を正確に伝える</h4>
+                <p>記述統計の役割はシンプルです。<span class="text-highlight">手元にあるデータを、誰にでもわかりやすい形に要約・可視化する</span>こと。ここには「推測」や「確率」は登場しません。あくまで事実としてのデータを記述します。</p>
+
+                <div class="lesson-callout">
+                    <span class="lesson-callout-title">📋 記述統計の具体例</span>
+                    <p>「A社の従業員100人の平均年収は520万円で、標準偏差は80万円だった」「先月のWebサイト訪問者は15,432人で、前月比+8%だった」——これらはすべて記述統計です。データを計算し、グラフにし、報告する。それが記述統計の仕事です。</p>
+                </div>
+
+                <div class="figure-container">
+                    <svg width="520" height="200" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="d1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1A5F7A" /><stop offset="100%" stop-color="#4A8BA8" /></linearGradient>
+                            <linearGradient id="d2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4A8BA8" /><stop offset="100%" stop-color="#7AB5CC" /></linearGradient>
+                            <linearGradient id="d3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E05D5D" /><stop offset="100%" stop-color="#F08A8A" /></linearGradient>
+                            <filter id="sh2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.10" /></filter>
+                        </defs>
+                        <rect width="520" height="200" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="28" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">記述統計のアウトプット例</text>
+
+                        <!-- 棒グラフ -->
+                        <rect x="40" y="160" width="40" height="30" rx="3" fill="url(#d1)" filter="url(#sh2)" />
+                        <text x="60" y="180" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">520</text>
+                        <text x="60" y="195" text-anchor="middle" fill="#495057" font-size="9">A社</text>
+                        <rect x="95" y="145" width="40" height="45" rx="3" fill="url(#d2)" filter="url(#sh2)" />
+                        <text x="115" y="167" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">620</text>
+                        <text x="115" y="195" text-anchor="middle" fill="#495057" font-size="9">B社</text>
+                        <rect x="150" y="155" width="40" height="35" rx="3" fill="url(#d3)" filter="url(#sh2)" />
+                        <text x="170" y="173" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">480</text>
+                        <text x="170" y="195" text-anchor="middle" fill="#495057" font-size="9">C社</text>
+                        <rect x="205" y="135" width="40" height="55" rx="3" fill="url(#d1)" filter="url(#sh2)" />
+                        <text x="225" y="155" text-anchor="middle" fill="#FFF" font-size="9" font-weight="bold">750</text>
+                        <text x="225" y="195" text-anchor="middle" fill="#495057" font-size="9">D社</text>
+
+                        <!-- 統計値表 -->
+                        <rect x="280" y="50" width="225" height="130" rx="8" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <rect x="280" y="50" width="225" height="30" rx="8" fill="#1A5F7A" opacity="0.9" />
+                        <text x="392" y="70" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">📊 基本統計量</text>
+
+                        <text x="300" y="100" fill="#495057" font-size="11">平均年収</text>
+                        <text x="470" y="100" text-anchor="end" fill="#1A5F7A" font-size="12" font-weight="bold">592万円</text>
+                        <line x1="295" y1="108" x2="490" y2="108" stroke="#E9ECEF" stroke-width="1" />
+
+                        <text x="300" y="125" fill="#495057" font-size="11">標準偏差</text>
+                        <text x="470" y="125" text-anchor="end" fill="#1A5F7A" font-size="12" font-weight="bold">98万円</text>
+                        <line x1="295" y1="133" x2="490" y2="133" stroke="#E9ECEF" stroke-width="1" />
+
+                        <text x="300" y="150" fill="#495057" font-size="11">サンプル数</text>
+                        <text x="470" y="150" text-anchor="end" fill="#1A5F7A" font-size="12" font-weight="bold">n = 400</text>
+                        <line x1="295" y1="158" x2="490" y2="158" stroke="#E9ECEF" stroke-width="1" />
+
+                        <text x="300" y="173" fill="#495057" font-size="11">中央値</text>
+                        <text x="470" y="173" text-anchor="end" fill="#1A5F7A" font-size="12" font-weight="bold">565万円</text>
+                    </svg>
+                    <p class="figure-caption">記述統計の典型的なアウトプット：棒グラフと基本統計量表。「データが語る事実」をそのまま伝える。</p>
+                </div>
+
+                <!-- ✏️ ちょこっと問題 -->
+                <div class="quiz-box">
+                    <p class="quiz-question">【確認問題】次の説明のうち、「記述統計」に該当するものはどれ？</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="true">A. 「先月の売上は1,250万円で、前月比+8%だった」</div>
+                        <div class="quiz-option" data-correct="false">B. 「このキャンペーンを実施すれば、95%の確率で売上が3〜8%向上する」</div>
+                        <div class="quiz-option" data-correct="false">C. 「全国の20代男性の平均身長は169.8〜174.8cmと推定される」</div>
+                        <div class="quiz-option" data-correct="false">D. 「新しい薬には有意な効果が認められた（p < 0.05）」</div>
+                    </div>
+                    <div class="quiz-feedback">正解は「A」です。Aは「すでに起こった事実」を要約しているだけなので記述統計です。B（区間推定）・C（信頼区間）・D（仮説検定）はすべて「推測統計」に分類されます。</div>
+                </div>
+            </div>
+
+            <!-- ========== Step 03 ========== -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">Step 03</span>
+                <h4>推測統計とは：「一部」から「全体」を推し量る</h4>
+                <p>一方、推測統計は <span class="text-highlight-red">手元にあるデータは「全体の一部（標本）」にすぎず、そこから「全体（母集団）」の特性を確率的に推測する</span> 手法です。ここで初めて「確率」と「不確実性」が登場します。</p>
+
+                <div class="lesson-callout" style="border-color: var(--color-orange);">
+                    <span class="lesson-callout-title" style="color: var(--color-orange);">🔬 推測統計の具体例</span>
+                    <p>「全国の20代男性の平均身長を調べたい。全員を測定するのは不可能なので、無作為に500人を抽出して測定したところ、平均172.3cmだった。この結果から、全国の20代男性の平均身長は169.8〜174.8cmの間にあると95%の確信を持って言える」——これが推測統計の典型的な思考法です。</p>
+                </div>
+
+                <div class="figure-container">
+                    <svg width="520" height="220" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="popGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1A5F7A" stop-opacity="0.1" /><stop offset="70%" stop-color="#1A5F7A" stop-opacity="0.05" /><stop offset="100%" stop-color="#1A5F7A" stop-opacity="0.02" /></radialGradient>
+                            <filter id="sh3"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.10" /></filter>
+                        </defs>
+                        <rect width="520" height="220" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="28" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="15" font-weight="bold">推測統計の考え方：標本 → 母集団</text>
+
+                        <!-- 母集団（大きな円） -->
+                        <ellipse cx="130" cy="120" rx="90" ry="75" fill="url(#popGrad)" stroke="#1A5F7A" stroke-width="2" stroke-dasharray="6,4" />
+                        <text x="130" y="105" text-anchor="middle" fill="#1A5F7A" font-size="13" font-weight="bold">👥 母集団</text>
+                        <text x="130" y="125" text-anchor="middle" fill="#495057" font-size="11">全国の20代男性</text>
+                        <text x="130" y="145" text-anchor="middle" fill="#495057" font-size="10">（数千万人）</text>
+                        <text x="130" y="170" text-anchor="middle" fill="#E05D5D" font-size="10">✗ 全員測定は不可能</text>
+
+                        <!-- 矢印 -->
+                        <text x="230" y="118" text-anchor="middle" fill="#ADB5BD" font-size="22">→</text>
+                        <text x="230" y="145" text-anchor="middle" fill="#ADB5BD" font-size="10">無作為抽出</text>
+
+                        <!-- 標本（小さな円） -->
+                        <ellipse cx="360" cy="120" rx="60" ry="60" fill="#E05D5D" opacity="0.06" stroke="#E05D5D" stroke-width="2" />
+                        <text x="360" y="105" text-anchor="middle" fill="#E05D5D" font-size="13" font-weight="bold">📋 標本</text>
+                        <text x="360" y="125" text-anchor="middle" fill="#495057" font-size="11">無作為抽出500人</text>
+                        <text x="360" y="148" text-anchor="middle" fill="#1A5F7A" font-size="12" font-weight="bold">平均172.3cm</text>
+                        <text x="360" y="170" text-anchor="middle" fill="#1A5F7A" font-size="10">→ ここから全体を推定</text>
+
+                        <!-- 推測結果の吹き出し -->
+                        <rect x="300" y="180" width="175" height="28" rx="14" fill="#1A5F7A" opacity="0.12" stroke="#1A5F7A" stroke-width="1" />
+                        <text x="387" y="198" text-anchor="middle" fill="#1A5F7A" font-size="11" font-weight="bold">95%信頼区間：169.8〜174.8cm</text>
+                    </svg>
+                    <p class="figure-caption">推測統計は「標本（一部）」から「母集団（全体）」を確率的に推定する。ここが記述統計との本質的な違い。</p>
+                </div>
+            </div>
+
+            <!-- ========== Step 04 ========== -->
+            <div class="lesson-step">
+                <span class="lesson-step-meta">Step 04</span>
+                <h4>2つの違いを表で整理する</h4>
+                <p>記述統計と推測統計の違いは、以下の4つの観点で整理すると明確になります。</p>
+
+                <div class="figure-container">
+                    <svg width="520" height="200" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="520" height="200" fill="#F8F9FA" rx="12" />
+                        <text x="260" y="25" text-anchor="middle" fill="#1A5F7A" font-family="'Shippori Mincho',serif" font-size="14" font-weight="bold">記述統計 vs 推測統計</text>
+
+                        <!-- ヘッダー -->
+                        <rect x="20" y="38" width="100" height="30" rx="6" fill="#1A5F7A" />
+                        <text x="70" y="58" text-anchor="middle" fill="#FFF" font-size="11" font-weight="bold">観点</text>
+                        <rect x="130" y="38" width="180" height="30" rx="6" fill="#1A5F7A" />
+                        <text x="220" y="58" text-anchor="middle" fill="#FFF" font-size="11" font-weight="bold">📋 記述統計</text>
+                        <rect x="320" y="38" width="180" height="30" rx="6" fill="#E05D5D" />
+                        <text x="410" y="58" text-anchor="middle" fill="#FFF" font-size="11" font-weight="bold">🔬 推測統計</text>
+
+                        <!-- 目的 -->
+                        <rect x="20" y="73" width="100" height="28" rx="4" fill="#E8F1F5" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="70" y="92" text-anchor="middle" fill="#1A5F7A" font-size="11">目的</text>
+                        <rect x="130" y="73" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="220" y="92" text-anchor="middle" fill="#495057" font-size="11">データの要約・可視化</text>
+                        <rect x="320" y="73" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="410" y="92" text-anchor="middle" fill="#495057" font-size="11">母集団の推定・検定</text>
+
+                        <!-- データ -->
+                        <rect x="20" y="105" width="100" height="28" rx="4" fill="#E8F1F5" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="70" y="124" text-anchor="middle" fill="#1A5F7A" font-size="11">データ</text>
+                        <rect x="130" y="105" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="220" y="124" text-anchor="middle" fill="#495057" font-size="11">手元にある全データ</text>
+                        <rect x="320" y="105" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="410" y="124" text-anchor="middle" fill="#495057" font-size="11">標本（一部）のみ</text>
+
+                        <!-- 確率 -->
+                        <rect x="20" y="137" width="100" height="28" rx="4" fill="#E8F1F5" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="70" y="156" text-anchor="middle" fill="#1A5F7A" font-size="11">確率</text>
+                        <rect x="130" y="137" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="220" y="156" text-anchor="middle" fill="#495057" font-size="11">登場しない</text>
+                        <rect x="320" y="137" width="180" height="28" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="410" y="156" text-anchor="middle" fill="#495057" font-size="11">確率が本質的に重要</text>
+
+                        <!-- 不確実性 -->
+                        <rect x="20" y="169" width="100" height="25" rx="4" fill="#E8F1F5" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="70" y="186" text-anchor="middle" fill="#1A5F7A" font-size="11">不確実性</text>
+                        <rect x="130" y="169" width="180" height="25" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="220" y="186" text-anchor="middle" fill="#1A5F7A" font-size="11">なし（事実のみ）</text>
+                        <rect x="320" y="169" width="180" height="25" rx="4" fill="#FFF" stroke="#E9ECEF" stroke-width="1" />
+                        <text x="410" y="186" text-anchor="middle" fill="#E05D5D" font-size="11">あり（〜の確率で）</text>
+                    </svg>
+                    <p class="figure-caption">最大の違いは「確率と不確実性の扱い」。記述統計は事実を述べるだけだが、推測統計は「確からしさ」を定量化する。</p>
+                </div>
+
+                <!-- インタラクティブCanvas：記述vs推測モード切替 -->
+                <div class="canvas-container" style="position: relative; overflow: hidden;">
+                    <canvas id="desc-infer-canvas" width="500" height="300" style="position: relative; z-index: 1; background: transparent;"></canvas>
+                    <div class="canvas-controls">
+                        <label for="desc-infer-slider">📊 モード切替：</label>
+                        <input type="range" id="desc-infer-slider" min="0" max="1" value="0" step="1">
+                        <span class="value-display" id="desc-infer-value">📋 記述統計モード</span>
+                    </div>
+                </div>
+
+                <div class="rich-card">
+                    <h5>🎯 ビジネスにおける使い分け</h5>
+                    <p>経営会議で「先月の売上は前月比+5%でした」と言うのは記述統計です。これは事実です。しかし「この新施策を導入すれば、95%の確率で売上が3〜8%向上する見込みです」と言うのは推測統計です。ビジネスにおいて「確からしさ」を伝えられるのは推測統計の力です。両方を使い分けられることが、データドリブンな意思決定の鍵となります。</p>
+                </div>
+            </div>
+
+            <!-- ========== Step 05 ========== -->
+            <div class="lesson-step success">
+                <span class="lesson-step-meta">Step 05</span>
+                <h4>まとめ：記述統計と推測統計の役割分担</h4>
+                <div class="summary-box">
+                    <h4>📌 この単元の3つの重要ポイント</h4>
+                    <ul>
+                        <li><strong>記述統計は「手元のデータを要約・可視化」する。</strong>平均、分散、グラフ化など。確率は登場せず、事実としてのデータを記述する。</li>
+                        <li><strong>推測統計は「標本から母集団を推定」する。</strong>区間推定や仮説検定など。ここで初めて確率と不確実性が登場する。</li>
+                        <li><strong>両者は対立するものではなく、補完関係にある。</strong>まず記述統計でデータの全体像を把握し、その上で推測統計で意思決定を行う。この2段構えが統計的思考の基本。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ========== Column ========== -->
+            <div class="lesson-step alert">
+                <span class="lesson-step-meta">番外編 (Column)</span>
+                <h4>【番外編】YouTubeの「視聴者属性レポート」——あなたのチャンネル登録者データは「記述統計」か「推測統計」か？</h4>
+                <div class="column-box">
+                    <span class="lesson-callout-title">🤖 AIの裏側で動いている統計の使い分け</span>
+                    <p>YouTube Studioのアナリティクス画面を開くと、さまざまなグラフや数値が表示されます。「過去28日間の視聴回数」「登録者の年代構成」「再生されている地域」。これらはすべて<span class="text-highlight">記述統計</span>です。すでに起こった事実を、見やすく整理して表示しているにすぎません。</p>
+                    <p>しかしYouTubeの裏側では、<span class="text-highlight-red">推測統計</span>も常に動いています。例えば「この動画が今後どれくらい再生されるか」という予測。YouTubeのAIは過去のデータから「この動画は公開から7日間で平均5,000回再生され、95%の確率で3,000〜8,000回の範囲に収まる」という推測を行い、それを元に「おすすめ」に表示するかどうかを判断しています。</p>
+                    <p>つまり、<span class="text-highlight">クリエイターが見ている画面は「記述統計」、AIが判断している裏側は「推測統計」</span>という構図です。両者の違いを理解することは、YouTubeのアルゴリズムを理解する第一歩とも言えるでしょう。</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="lesson-footer-nav">
+            <a href="index.html" class="btn-secondary">&larr; 目次に戻る</a>
+            <a href="#" class="btn btn-primary">次の単元へ（準備中）</a>
+        </footer>
+    </article>
+</main>
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-left"><div class="footer-logo">Otona Statistics</div><p>大人のための統計学学び直しプラットフォーム</p></div>
+        <div class="footer-right"><p class="copyright">&copy; 2026 Otona Statistics.</p></div>
+    </div>
+</footer>
+<script src="../js/main.js"></script>
+</body>
+</html>
